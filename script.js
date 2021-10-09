@@ -2,24 +2,19 @@ function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
 
-    function moveHoe(x) {
-        console.log(x)
-        theHero.clearHeroRect()
-        theHero.update(x)
-        theHero.drawRect()
-    }
-
     class Entity {
-        constructor(x, y, height, width, speed, color) {
+        constructor(x, y, height, width, color, dx, dy) {
             this.x = x
             this.y = y
             this.height = height
             this.width = width
-            this.speed = speed
             this.color = color
+            this.dx = dx
+            this.dy = dy
         }
 
         drawRect() {
+            console.log("spawning hero")
             context.fillStyle = this.color
             context.fillRect(this.x, this.y, this.width, this.height)
         }
@@ -31,32 +26,61 @@ function init() {
         whereTo(event) {
             switch (event.key) {
                 case "a":
-                    console.log("key pressed", event.key)
-                    moveHoe(-10)
+                    console.log(event)
+                    if (theHero.dx <= -4) {
+                        break
+                    }
+                    theHero.dx -= 4
+
                     break
                 case "d":
-                    console.log("key pressed", event.key)
-                    moveHoe(10)
+                    console.log(event)
+                    if (theHero.dx >= 4) {
+                        break
+                    }
+                    theHero.dx += 4
                     break
-
             }
         }
 
-        update(addedX) {
-            this.x = this.x + addedX
-            console.log("moved", this.x)
+        stop(event) {
+            switch (event.key) {
+                case "a":
+                    console.log(event)
+                    theHero.dx += 4
+                    break
+                case "d":
+                    console.log(event)
+                    theHero.dx -= 4
+                    break
+            }
         }
 
+        // updateHeroPos(){
 
-
+        // }
 
     }
 
-    const theHero = new Entity(100, 550, 50, 20)
+    const theHero = new Entity(100, 550, 50, 20, "green", 0, 0)
 
     theHero.drawRect()
 
-    document.addEventListener("keypress", theHero.whereTo)
+    function update() {
+        theHero.x = theHero.x + theHero.dx
+        theHero.drawRect()
+    }
+
+    function animate() {
+        requestAnimationFrame(animate)
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        update()
+
+    }
+    animate()
+
+    addEventListener("keydown", theHero.whereTo)
+    addEventListener("keyup", theHero.stop)
 }
 
 addEventListener("DOMContentLoaded", init)
