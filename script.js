@@ -2,6 +2,8 @@ function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
 
+    keyArray = [{ "a": false, "d": false, " ": false }]
+
     class Entity {
         constructor(x, y, height, width, color, dx, dy) {
             this.x = x
@@ -14,51 +16,81 @@ function init() {
         }
 
         drawRect() {
-            console.log("spawning hero")
             context.fillStyle = this.color
             context.fillRect(this.x, this.y, this.width, this.height)
         }
 
-        clearHeroRect() {
-            context.clearRect(this.x, this.y, this.width, this.height)
-        }
-
         whereTo(event) {
+            console.log(event)
             switch (event.key) {
                 case "a":
-                    console.log(event)
-                    if (theHero.dx <= -4) {
+                    keyArray["a"] = true
+                    console.log(keyArray, keyArray["a"])
+                    console.log(theHero.x)
+                    if (theHero.dx <= -5) {
                         break
                     }
-                    theHero.dx -= 4
-
+                    theHero.dx -= 5
                     break
                 case "d":
-                    console.log(event)
-                    if (theHero.dx >= 4) {
+                    keyArray["d"] = true
+                    console.log(keyArray, keyArray["d"])
+                    // console.log(theHero.dx)
+                    if (theHero.dx >= 5) {
                         break
                     }
-                    theHero.dx += 4
+                    theHero.dx += 5
                     break
+                case " ":
+                    keyArray[" "] = true
+                    theHero.dy -= 25
+                    console.log(theHero.dy, theHero)
+
             }
         }
 
         stop(event) {
             switch (event.key) {
                 case "a":
-                    console.log(event)
-                    theHero.dx += 4
+                    keyArray["a"] = false
+                    theHero.dx += 5
+                    console.log(keyArray, keyArray["a"])
+                    // console.log(theHero.dx)
                     break
                 case "d":
-                    console.log(event)
-                    theHero.dx -= 4
+                    keyArray["d"] = false
+                    theHero.dx -= 5
+                    console.log(keyArray, keyArray["d"])
+                    // console.log(theHero.dx)
                     break
+                case " ":
+                    keyArray[" "] = false
+                    theHero.dy += 25
             }
         }
 
-        // updateHeroPos(){
+        gravity() {
+            if (this.y + this.height >= canvas.height) {
+                console.log(this.dy, this.y)
+                this.dy -= this.dy
+                this.y = 550
+            } else {
+                if (this.dy >= 5) {
+                    return
+                } else {
+                    this.dy += 0.5
+                }
+            }
+        }
 
-        // }
+        updateHeroPos() {
+            if (keyArray["a"] && keyArray["d"]) {
+                theHero.dx = 0
+            }
+            theHero.x = theHero.x + theHero.dx
+            theHero.y = theHero.y + theHero.dy
+        }
+
 
     }
 
@@ -67,7 +99,8 @@ function init() {
     theHero.drawRect()
 
     function update() {
-        theHero.x = theHero.x + theHero.dx
+        theHero.updateHeroPos()
+        theHero.gravity()
         theHero.drawRect()
     }
 
