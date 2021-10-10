@@ -2,7 +2,11 @@ function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
 
-    keyArray = [{ "a": false, "d": false, " ": false }]
+    keyArray = {
+        "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0, "canJump": true }
+    }
+
+
 
     class Entity {
         constructor(x, y, height, width, color, dx, dy) {
@@ -21,11 +25,10 @@ function init() {
         }
 
         whereTo(event) {
-            console.log(event)
             switch (event.key) {
                 case "a":
-                    keyArray["a"] = true
-                    console.log(keyArray, keyArray["a"])
+                    keyArray["a"]["pressed"] = true
+                    console.log(keyArray, keyArray["a"]["pressed"])
                     console.log(theHero.x)
                     if (theHero.dx <= -5) {
                         break
@@ -33,7 +36,7 @@ function init() {
                     theHero.dx -= 5
                     break
                 case "d":
-                    keyArray["d"] = true
+                    keyArray["d"]["pressed"] = true
                     console.log(keyArray, keyArray["d"])
                     // console.log(theHero.dx)
                     if (theHero.dx >= 5) {
@@ -42,35 +45,45 @@ function init() {
                     theHero.dx += 5
                     break
                 case " ":
-                    keyArray[" "] = true
-                    theHero.dy -= 30
-                    console.log(theHero.dy, theHero)
-
+                    console.log(event.repeat)
+                    console.log(keyArray[" "]["n"])
+                    if (keyArray[" "]["n"] >= 2) {
+                        break
+                    }
+                    keyArray[" "]["pressed"] = true
+                    if (!event.repeat) {
+                        theHero.dy -= 30
+                    }
+                    setTimeout(() => theHero.dy += 30, 100)
+                    break
             }
         }
 
         stop(event) {
             switch (event.key) {
                 case "a":
-                    keyArray["a"] = false
+                    keyArray["a"]["pressed"] = false
                     theHero.dx += 5
                     console.log(keyArray, keyArray["a"])
                     // console.log(theHero.dx)
                     break
                 case "d":
-                    keyArray["d"] = false
+                    keyArray["d"]["pressed"] = false
                     theHero.dx -= 5
-                    console.log(keyArray, keyArray["d"])
+                    console.log(keyArray, keyArray["d"]["pressed"])
                     // console.log(theHero.dx)
                     break
                 case " ":
-                    keyArray[" "] = false
-                    theHero.dy += 30
+                    keyArray[" "]["n"]++
+                //  
+                // theHero.dy += 30
             }
         }
 
         gravity() {
             if (this.y + this.height >= canvas.height) {
+                keyArray[" "]["pressed"] = false
+                keyArray[" "]["n"] = 0
                 console.log(this.dy, this.y)
                 this.dy -= this.dy
                 this.y = 550
@@ -84,7 +97,7 @@ function init() {
         }
 
         updateHeroPos() {
-            if (keyArray["a"] && keyArray["d"]) {
+            if (keyArray["a"]["pressed"] && keyArray["d"]["pressed"]) {
                 theHero.dx = 0
             }
             if (theHero.dx < 0 && theHero.x <= 8) {
