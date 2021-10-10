@@ -2,12 +2,14 @@ function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
 
+
+    // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0, "canJump": true }
     }
 
 
-
+    // this is the class that creates entities like the player and the enemies
     class Entity {
         constructor(x, y, height, width, color, dx, dy) {
             this.x = x
@@ -18,12 +20,12 @@ function init() {
             this.dx = dx
             this.dy = dy
         }
-
+        //this method draws the entity
         drawRect() {
             context.fillStyle = this.color
             context.fillRect(this.x, this.y, this.width, this.height)
         }
-
+        //this method checks to see which key is pressed and moves the player character accordingly
         whereTo(event) {
             switch (event.key) {
                 case "a":
@@ -45,6 +47,7 @@ function init() {
                     theHero.dx += 5
                     break
                 case " ":
+                    // when the spacebar is pressed, if the player has not jumped twice yet and they're not holding the button down, theHero will jump
                     console.log(event.repeat)
                     console.log(keyArray[" "]["n"])
                     if (keyArray[" "]["n"] >= 2) {
@@ -58,7 +61,7 @@ function init() {
                     break
             }
         }
-
+        // this method stops the movement when the key is released
         stop(event) {
             switch (event.key) {
                 case "a":
@@ -74,12 +77,12 @@ function init() {
                     // console.log(theHero.dx)
                     break
                 case " ":
+                    //the number of jump checker is incremented when the spacebar is released
                     keyArray[" "]["n"]++
-                //  
-                // theHero.dy += 30
             }
         }
 
+        //the gravity function constantly moves the entities down by a certain dy, unless they are standing on something
         gravity() {
             if (this.y + this.height >= canvas.height) {
                 keyArray[" "]["pressed"] = false
@@ -95,7 +98,7 @@ function init() {
                 }
             }
         }
-
+        // this method uses theHero's dx and dy to change it's coordinates to that it can be drawn in a new place
         updateHeroPos() {
             if (keyArray["a"]["pressed"] && keyArray["d"]["pressed"]) {
                 theHero.dx = 0
@@ -116,13 +119,13 @@ function init() {
     const theHero = new Entity(100, 550, 50, 20, "green", 0, 0)
 
     theHero.drawRect()
-
+    //updates the canvas by drawing the entities' in new positions
     function update() {
         theHero.updateHeroPos()
         theHero.gravity()
         theHero.drawRect()
     }
-
+    //clears the canvas and updates canvas
     function animate() {
         requestAnimationFrame(animate)
         context.clearRect(0, 0, canvas.width, canvas.height)
