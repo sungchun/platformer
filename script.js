@@ -43,7 +43,7 @@ function init() {
                     break
                 case " ":
                     keyArray[" "] = true
-                    theHero.dy -= 25
+                    theHero.dy -= 30
                     console.log(theHero.dy, theHero)
 
             }
@@ -65,7 +65,7 @@ function init() {
                     break
                 case " ":
                     keyArray[" "] = false
-                    theHero.dy += 25
+                    theHero.dy += 30
             }
         }
 
@@ -78,7 +78,7 @@ function init() {
                 if (this.dy >= 5) {
                     return
                 } else {
-                    this.dy += 0.5
+                    this.dy += 1
                 }
             }
         }
@@ -86,6 +86,12 @@ function init() {
         updateHeroPos() {
             if (keyArray["a"] && keyArray["d"]) {
                 theHero.dx = 0
+            }
+            if (theHero.dx < 0 && theHero.x <= 8) {
+                theHero.x = 5
+            }
+            if (theHero.dx > 0 && theHero.x >= 575) {
+                theHero.x = 575
             }
             theHero.x = theHero.x + theHero.dx
             theHero.y = theHero.y + theHero.dy
