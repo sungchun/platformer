@@ -20,8 +20,8 @@ function init() {
         }
 
         updateBullet() {
-            this.x = theHero.x + this.dx
-            this.y = theHero.y + this.dy
+            this.x = this.x + this.dx
+            this.y = this.y + this.dy
         }
 
         drawCircle() {
@@ -185,6 +185,8 @@ function init() {
         console.log("y coord", yCoord)
         let opposite = Math.cos(theta)
         let adjacent = Math.sin(theta)
+        shotBulletArray[j].x = theHero.x + (theHero.width / 2)
+        shotBulletArray[j].y = theHero.y + (theHero.height / 2)
         shotBulletArray[j].dx = opposite * 15
         shotBulletArray[j].dy = adjacent * 15
         j++
