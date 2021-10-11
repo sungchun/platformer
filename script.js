@@ -52,7 +52,6 @@ function init() {
                     if (!event.repeat) {
                         theHero.dy -= 30
                     }
-                    // setTimeout(() => theHero.dy += 30, 100)
                     break
                 // let's the player
                 case "s":
