@@ -56,6 +56,7 @@ function init() {
                     break
                 // let's the player
                 case "s":
+                    keyArray[" "]["n"] = 2
                     keyArray["s"]["pressed"] = true
             }
         }
@@ -127,6 +128,9 @@ function init() {
             if (theHero.dx > 0 && theHero.x >= 575) {
                 theHero.x = 575
             }
+            if (theHero.dy < 0 && theHero.y <= 0) {
+                theHero.y = 0
+            }
             theHero.x = theHero.x + theHero.dx
             theHero.y = theHero.y + theHero.dy
         }
@@ -137,11 +141,13 @@ function init() {
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(230, 400, 10, 150, "black", 0, 0)
-    const platformFour = new Entity(100, 320, 10, 100, "black", 0, 0)
-    const platformFive = new Entity(310, 300, 10, 100, "black", 0, 0)
+    const platformFour = new Entity(100, 280, 10, 150, "black", 0, 0)
+    const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
+    const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
+    const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
 
     //making an array of platforms
-    platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive]
+    platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
 
     theHero.drawRect()
     //updates the canvas by drawing the entities' in new positions
@@ -149,11 +155,7 @@ function init() {
         theHero.updateHeroPos()
         theHero.playerGravity()
         theHero.drawRect()
-        platformOne.drawRect()
-        platformTwo.drawRect()
-        platformThree.drawRect()
-        platformFour.drawRect()
-        platformFive.drawRect()
+        platformArray.forEach(platform => platform.drawRect())
         floor.drawRect()
     }
     //clears the canvas and updates canvas
