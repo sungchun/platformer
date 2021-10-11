@@ -2,13 +2,35 @@ function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
 
-
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }
     }
     let doWeStop = false
     standingOn = null
+
+    class Projectile {
+        constructor(x, y, radius, color, dx, dy) {
+            this.x = x
+            this.y = y
+            this.radius = radius
+            this.color = color
+            this.dx = dx
+            this.dy = dy
+        }
+
+        updateBullet() {
+            this.x = theHero.x + this.dx
+            this.y = theHero.y + this.dy
+        }
+
+        drawCircle() {
+            context.beginPath()
+            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+            context.fillStyle = this.color
+            context.fill()
+        }
+    }
 
     // this is the class that creates entities like the player and the enemies
     class Entity {
@@ -44,7 +66,7 @@ function init() {
                     theHero.dx += 6
                     break
                 case " ":
-                    // when the spacebar is pressed, if the player has not jumped twice yet and they're not holding the button down, theHero will jump
+                    // when the space-bar is pressed, if the player has not jumped twice yet and they're not holding the button down, theHero will jump
                     if (keyArray[" "]["n"] >= 2) {
                         break
                     }
@@ -109,7 +131,7 @@ function init() {
                 this.dy -= this.dy
                 this.y = closestPlatform.y - this.height
             } else {
-                if (this.dy >= 9) {
+                if (this.dy >= 6) {
                     return
                 } else {
                     this.dy += 3
@@ -135,39 +157,67 @@ function init() {
         }
     }
 
+    //creating class instances
     const theHero = new Entity(100, 500, 50, 20, "green", 0, 0)
-    const floor = new Entity(0, 600, 0.1, 600, "black", 0, 0)
+    const floor = new Entity(-10, 600, 0.1, 620, "black", 0, 0)
+    const one = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const two = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const three = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const four = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
-    const platformThree = new Entity(230, 400, 10, 150, "black", 0, 0)
+    const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
     const platformFour = new Entity(100, 280, 10, 150, "black", 0, 0)
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
 
+    bulletArray = [one, two, three, four]
+    shotBulletArray = []
+    let j = 0
+    function whereDoIShoot(event) {
+        shotBulletArray.push(bulletArray[j])
+        console.log(shotBulletArray)
+        const xCoord = event.clientX - canvas.offsetLeft
+        const yCoord = event.clientY - canvas.offsetTop
+        const theta = Math.atan2(yCoord - theHero.y, xCoord - theHero.x)
+        console.log("x coord", xCoord)
+        console.log("y coord", yCoord)
+        let opposite = Math.cos(theta)
+        let adjacent = Math.sin(theta)
+        shotBulletArray[j].dx = opposite * 15
+        shotBulletArray[j].dy = adjacent * 15
+        j++
+        if (j === 3) {
+            j = 0
+        }
+    }
+
     //making an array of platforms
     platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
 
-    theHero.drawRect()
     //updates the canvas by drawing the entities' in new positions
     function update() {
+        platformArray.forEach(platform => platform.drawRect())
         theHero.updateHeroPos()
         theHero.playerGravity()
         theHero.drawRect()
-        platformArray.forEach(platform => platform.drawRect())
-        floor.drawRect()
+        shotBulletArray.forEach(bullet => {
+            bullet.updateBullet()
+            bullet.drawCircle()
+        })
     }
     //clears the canvas and updates canvas
     function animate() {
         requestAnimationFrame(animate)
         context.clearRect(0, 0, canvas.width, canvas.height)
         update()
-
     }
     animate()
 
     addEventListener("keydown", theHero.whereTo)
     addEventListener("keyup", theHero.stop)
+    addEventListener("click", whereDoIShoot)
 }
 
 addEventListener("DOMContentLoaded", init)
