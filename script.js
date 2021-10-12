@@ -1,10 +1,33 @@
 function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
-
+    //empty array to be filled with nodes
+    nodeArray = []
+    //for loop that pushes all nodes to node array
     for (let x = 0; x < 601; x += 20) {
-
+        for (let y = 0; y < 601; y += 20) {
+            nodeArray.push([x, y])
+            context.beginPath()
+            context.arc(x, y, 2, 0, Math.PI * 2, false)
+            context.fillStyle = "blue"
+            context.fill()
+        }
     }
+    console.log(nodeArray)
+
+    //checks the neighboring nodes
+    function neighboringNodes(node) {
+        directions = [[20,], [0, 20], [-20, 0], [0, -20]]
+        result = []
+        for (let i = 0; i < direction.length; i++) {
+            let neighbor = [node[0] + directions[0], node[1] + directions[1]]
+            if (nodeArray.includes(neighbor)) {
+                result.push(neighbor)
+            }
+        }
+        return result
+    }
+
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
@@ -175,7 +198,6 @@ function init() {
     const bulletFive = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const bulletSix = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const bulletSeven = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletEight = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
@@ -184,7 +206,7 @@ function init() {
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
 
-    bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven, bulletEight]
+    bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     shotBulletArray = []
     let j = 0
     function whereDoIShoot(event) {
@@ -210,7 +232,7 @@ function init() {
         bulletArray[j].dy = adjacent * 8
         console.log(bulletArray[j].dy, bulletArray[j].dx)
         j++
-        if (j === 7) {
+        if (j === 6) {
             j = 0
         }
     }
@@ -234,6 +256,32 @@ function init() {
         requestAnimationFrame(animate)
         context.clearRect(0, 0, canvas.width, canvas.height)
         update()
+        for (let x = 0; x < 601; x += 20) {
+            context.strokeStyle = "light grey"
+            context.strokeWidth = 1
+            context.beginPath()
+            context.moveTo(x, 0)
+            context.lineTo(x, canvas.height)
+            context.stroke()
+
+        }
+        for (let y = 0; y < 601; y += 20) {
+            context.strokeStyle = "light grey"
+            context.strokeWidth = 1
+            context.beginPath()
+            context.moveTo(0, y)
+            context.lineTo(canvas.width, y)
+            context.stroke()
+        }
+        for (let x = 0; x < 601; x += 20) {
+            for (let y = 0; y < 601; y += 20) {
+                nodeArray.push([x, y])
+                context.beginPath()
+                context.arc(x, y, 2, 0, Math.PI * 2, false)
+                context.fillStyle = "blue"
+                context.fill()
+            }
+        }
     }
     animate()
 
