@@ -18,12 +18,17 @@ function init() {
             this.dx = dx
             this.dy = dy
         }
-
+        //updates the bullet's position to be drawn by adding the speed onto the coordinates
         updateBullet() {
             this.x = this.x + this.dx
             this.y = this.y + this.dy
+            let xDone = (this.x > canvas.width || this.x < 0)
+            let yDone = (this.y > canvas.height || this.y < 0)
+            if (xDone || yDone) {
+                shotBulletArray.splice(shotBulletArray.indexOf(this), 1)
+            }
         }
-
+        //draws the bullet
         drawCircle() {
             context.beginPath()
             context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
@@ -93,7 +98,7 @@ function init() {
                     theHero.dx -= 6
                     break
                 case " ":
-                    //the number of jump checker is incremented when the spacebar is released
+                    //the number of jump checker is incremented when the space-bar is released
                     keyArray[" "]["n"]++
                     break
                 case "s":
@@ -160,10 +165,12 @@ function init() {
     //creating class instances
     const theHero = new Entity(100, 500, 50, 20, "green", 0, 0)
     const floor = new Entity(-10, 600, 0.1, 620, "black", 0, 0)
-    const one = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const two = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const three = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const four = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletOne = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletTwo = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletThree = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletFour = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletFive = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletSix = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
@@ -172,12 +179,11 @@ function init() {
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
 
-    bulletArray = [one, two, three, four]
+    bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix]
     shotBulletArray = []
     let j = 0
     function whereDoIShoot(event) {
         shotBulletArray.push(bulletArray[j])
-        console.log(shotBulletArray)
         const xCoord = event.clientX - canvas.offsetLeft
         const yCoord = event.clientY - canvas.offsetTop
         const theta = Math.atan2(yCoord - theHero.y, xCoord - theHero.x)
@@ -185,12 +191,13 @@ function init() {
         console.log("y coord", yCoord)
         let opposite = Math.cos(theta)
         let adjacent = Math.sin(theta)
-        shotBulletArray[j].x = theHero.x + (theHero.width / 2)
-        shotBulletArray[j].y = theHero.y + (theHero.height / 2)
-        shotBulletArray[j].dx = opposite * 15
-        shotBulletArray[j].dy = adjacent * 15
+        bulletArray[j].x = theHero.x + (theHero.width / 2)
+        bulletArray[j].y = theHero.y + (theHero.height / 2)
+        bulletArray[j].dx = opposite * 8
+        bulletArray[j].dy = adjacent * 8
+        console.log(bulletArray[j].dy, bulletArray[j].dx)
         j++
-        if (j === 3) {
+        if (j === 5) {
             j = 0
         }
     }
