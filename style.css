@@ -6,7 +6,25 @@ body{
     justify-content: center;
     align-items: center;
 }
+.grid-div{
+    position: relative;
+    left: 302px;
+    height: 600px;
+    width: 600px;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(30,  20px);
+    grid-template-rows: repeat(30, 20px);
+}
+
+.grid-div div{
+    border: 1px dotted black;
+}
+
 canvas{
+    z-index: -1;
+    position: relative;
+    right: 300px;
     border: 2px solid black;
 }
 span{
