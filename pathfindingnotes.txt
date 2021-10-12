@@ -1,0 +1,73 @@
+My notes on pathfinding AI and hopefully some pseudocode at the then
+first you need a graph
+    a graph consists of nodes and edges, nodes are where the thing can be and edges are what connects them
+    where the nodes and edges are in space are irrelevant to the program on the connections between the nodes are important
+    you can run a loop for each node that checks neighboring nodes and adds them to a list, exclude nodes that are inside obstacles or are not in the og node array
+    grid
+        easiest to visualise, understand, use but results in a lot of nodes and therefore can take longer\
+        alternatively you can have nodes in places where you may want smth to move important
+    breadth first search
+        create a stack or a queue or w/e some kinda data structure of things in an order of the "frontier"
+            the "frontier" is the outer ring of adjacent nodes from the start
+            a stack in javascript
+                let stack = []
+                stack.push(2)
+                stack.push(5)
+                let x = stack.pop()
+                change pop to shift for a queue
+        create a set which is like an array of reached nodes
+        check the first thing the in the frontier stack
+            check it's neighboring nodes the loop made earlier
+                if next (one of the neighboring nodes) isn't in "frontier" or reached
+                    add next to both of them
+        this is how you move from one node to the rest of them
+        how to actually navigate it 
+            use the "reached" set to discern where the navigator has just come from
+            do this by making it into an object
+                
+                let frontier = []
+                frontier.push(starting node)
+                let came_from = obj{}
+                came_from[start] = none
+
+                    while(frontier.length > 0 ){
+                        let current = frontier.pop()
+                        let neighborList = graph.neighbors(current)
+                        for(let i = 0; i < neighborList.length; i++){
+                            if(!(came_from.includes(neighborList[i])){
+                                frontier.shift(neighborList[i])
+                                came_from[neighborList[i]] = current
+                            }
+                        }
+                    }
+            now each node visited exists as a property in the object and its value is the previous node
+                now all the nodes in the object are "pointing" at the previous node and in the general direction of the start
+                you can follow these pointings to the start from the finish
+
+                    current = the goal node
+                    path = []
+                    while(current !== start){
+                        path.push(current)
+                        current = came_from[current]
+                    }
+            the frontier only needs to expand until it reaches to goal, so you can include an "early exit" condition in the frontier loop  
+                if(current === goal){
+                    break
+                }
+
+    Dijkstra's algorithm (might not bother going this far)
+        now you have to give the nodes a cost, and the algorithm will take into account the cost of travelling to each node and prioritize less cost
+        give the nodes a cost (may change due to terrain or maybe just steps needed)
+        create an object that tracks the sum of the costs of the visited nodes (while the algorithm is looking for a path) 
+        and gives each node the value of cost spent so far in the object
+    Greedy best first search 
+        uses a function that gives the approximate true distance from start to finish and uses that to prioritize certain nodes in the queue
+    A* algorithm    
+        uses Dijkstra's and greedy best first search algos
+
+
+
+
+
+
+
