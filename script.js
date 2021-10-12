@@ -2,9 +2,12 @@ function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
 
+    for (let x = 0; x < 601; x += 20) {
+
+    }
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
-        "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }
+        "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
     }
     let doWeStop = false
     standingOn = null
@@ -171,6 +174,8 @@ function init() {
     const bulletFour = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const bulletFive = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const bulletSix = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletSeven = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletEight = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
@@ -179,11 +184,19 @@ function init() {
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
 
-    bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix]
+    bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven, bulletEight]
     shotBulletArray = []
     let j = 0
     function whereDoIShoot(event) {
+        if (keyArray["click"]["pressed"]) {
+            return
+        }
+        keyArray["click"]["pressed"] = true
+        setTimeout(function () {
+            keyArray["click"]["pressed"] = false
+        }, 300)
         shotBulletArray.push(bulletArray[j])
+        console.log(shotBulletArray)
         const xCoord = event.clientX - canvas.offsetLeft
         const yCoord = event.clientY - canvas.offsetTop
         const theta = Math.atan2(yCoord - theHero.y, xCoord - theHero.x)
@@ -197,7 +210,7 @@ function init() {
         bulletArray[j].dy = adjacent * 8
         console.log(bulletArray[j].dy, bulletArray[j].dx)
         j++
-        if (j === 5) {
+        if (j === 7) {
             j = 0
         }
     }
