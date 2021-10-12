@@ -6,7 +6,7 @@ body{
     justify-content: center;
     align-items: center;
 }
-.grid-div{
+/* .grid-div{
     position: relative;
     left: 302px;
     height: 600px;
@@ -19,12 +19,12 @@ body{
 
 .grid-div div{
     border: 1px dotted black;
-}
+} */
 
 canvas{
     z-index: -1;
-    position: relative;
-    right: 300px;
+    /* position: relative;
+    right: 300px; */
     border: 2px solid black;
 }
 span{

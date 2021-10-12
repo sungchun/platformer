@@ -3,6 +3,13 @@ function init() {
     const context = canvas.getContext("2d")
     //empty array to be filled with nodes
     nodeArray = []
+    noGoNodes = [[60, 120], [80, 120], [100, 120], [120, 120], [140, 120], [160, 120], [180, 120], [200, 120], [220, 120],
+    [240, 120], [360, 120], [380, 120], [400, 120], [420, 120], [440, 120], [460, 120], [480, 120], [500, 120], [520, 120], [540, 120],
+    [100, 280], [120, 280], [140, 280], [160, 280], [180, 280], [200, 280], [220, 280], [240, 280],
+    [360, 280], [380, 280], [400, 280], [420, 280], [440, 280], [460, 280], [480, 280], [500, 280],
+    [240, 400], [260, 400], [280, 400], [300, 400], [320, 400], [340, 400], [360, 400],
+    [60, 480], [80, 480], [100, 480], [120, 480], [140, 480], [160, 480], [180, 480], [200, 480], [220, 400], [240, 400],
+    [360, 480], [380, 400], [400, 400], [420, 400], [440, 400], [460, 400], [480, 400], [500, 400], [520, 400], [540, 400]]
     //for loop that pushes all nodes to node array
     for (let x = 0; x < 601; x += 20) {
         for (let y = 0; y < 601; y += 20) {
@@ -13,21 +20,103 @@ function init() {
             context.fill()
         }
     }
-    console.log(nodeArray)
-
-    //checks the neighboring nodes
-    function neighboringNodes(node) {
-        directions = [[20,], [0, 20], [-20, 0], [0, -20]]
-        result = []
-        for (let i = 0; i < direction.length; i++) {
-            let neighbor = [node[0] + directions[0], node[1] + directions[1]]
-            if (nodeArray.includes(neighbor)) {
-                result.push(neighbor)
+    // removes nodes inside platforms from node Array
+    function removeBadNodes() {
+        let nodeCounter = {}
+        for (let i = 0; i < nodeArray.length; i++) {
+            nodeCounter[nodeArray[i]] = 1
+        }
+        for (let i = 0; i < noGoNodes.length; i++) {
+            nodeCounter[noGoNodes[i]] = (nodeCounter[noGoNodes[i]] || 0) + 1
+        }
+        for (let i = 0; i < nodeArray.length; i++) {
+            if (nodeCounter[nodeArray[i]] > 1) {
+                nodeArray.splice(i, 1)
             }
         }
-        return result
+    }
+    removeBadNodes()
+
+    //checks the neighboring nodes
+    // function neighbors(node) {
+    //     directions = [[20, 0], [0, 20], [-20, 0], [0, -20]]
+    //     result = []
+    //     for (let i = 0; i < direction.length; i++) {
+    //         let neighbor = [node[0] + directions[0], node[1] + directions[1]]
+    //         if (nodeArray.includes(neighbor)) {
+    //             result.push(neighbor)
+    //         }
+    //     }
+    //     return result
+    // }
+    function arrayContains(arr, item) {
+        let item_as_string = item.toString()
+        let contains = arr.some(function (item) {
+            return item.toString() === item_as_string
+        })
+        return contains
     }
 
+    class Graph {
+        constructor() {
+            this.edges = {}
+        }
+
+        neighbors(node) {
+            let directions = [[20, 0], [0, 20], [-20, 0], [0, -20]]
+            this.edges[node] = []
+            for (let i = 0; i < 4; i++) {
+                let neighbor = [node[0] + directions[i][0], node[1] + directions[i][1]]
+                // console.log(neighbor)
+                if (arrayContains(nodeArray, neighbor)) {
+                    this.edges[node].push(neighbor)
+                }
+            }
+            return this.edges
+        }
+    }
+
+    class Queue {
+        constructor() {
+            this.elements = []
+        }
+        empty() {
+            return !(this.elements.length > 0)
+        }
+        put(x) {
+            this.elements.push(x)
+        }
+        get() {
+            return this.elements.shift()
+        }
+    }
+
+    let gameGraph = new Graph()
+
+    //function that finds a path from a start
+    const pathfinder = function () {
+        let frontier = new Queue()
+        frontier.put([0, 0])
+        frontier.put([0, 0])
+        let reached = {}
+        reached[[0, 0]] = true
+        let current = frontier.get()
+        while (!frontier.empty()) {
+            let current = frontier.get()
+            let neighborArrayLength = gameGraph.neighbors(current)[current].length
+            // console.log("length", gameGraph.neighbors(current)[].length)
+            for (let i = 0; i < neighborArrayLength; i++) {
+                let next = gameGraph.neighbors(current)[current][i]
+                if (!reached[next]) {
+                    frontier.put(next)
+                    reached[next] = true
+                }
+            }
+        }
+        console.log("reached", reached)
+    }
+
+    pathfinder()
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
@@ -289,5 +378,6 @@ function init() {
     addEventListener("keyup", theHero.stop)
     addEventListener("click", whereDoIShoot)
 }
+
 
 addEventListener("DOMContentLoaded", init)
