@@ -20,6 +20,7 @@ function init() {
             context.fill()
         }
     }
+
     // removes nodes inside platforms from node Array
     function removeBadNodes() {
         let nodeCounter = {}
@@ -36,25 +37,22 @@ function init() {
         }
     }
     removeBadNodes()
-
-    //checks the neighboring nodes
-    // function neighbors(node) {
-    //     directions = [[20, 0], [0, 20], [-20, 0], [0, -20]]
-    //     result = []
-    //     for (let i = 0; i < direction.length; i++) {
-    //         let neighbor = [node[0] + directions[0], node[1] + directions[1]]
-    //         if (nodeArray.includes(neighbor)) {
-    //             result.push(neighbor)
-    //         }
-    //     }
-    //     return result
-    // }
+    //to check if an array contains a subarray
     function arrayContains(arr, item) {
         let item_as_string = item.toString()
         let contains = arr.some(function (item) {
             return item.toString() === item_as_string
         })
         return contains
+    }
+    //to check if two arrays are the same
+    function arraysEqual(arr1, arr2) {
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) {
+                return false
+            }
+        }
+        return true
     }
 
     class Graph {
@@ -63,16 +61,18 @@ function init() {
         }
 
         neighbors(node) {
+            if (this.edges[node]) {
+                return this.edges[node]
+            }
             let directions = [[20, 0], [0, 20], [-20, 0], [0, -20]]
             this.edges[node] = []
             for (let i = 0; i < 4; i++) {
                 let neighbor = [node[0] + directions[i][0], node[1] + directions[i][1]]
-                // console.log(neighbor)
                 if (arrayContains(nodeArray, neighbor)) {
                     this.edges[node].push(neighbor)
                 }
             }
-            return this.edges
+            return this.edges[node]
         }
     }
 
@@ -94,29 +94,40 @@ function init() {
     let gameGraph = new Graph()
 
     //function that finds a path from a start
-    const pathfinder = function () {
+    const pathfinder = function (goal) {
         let frontier = new Queue()
         frontier.put([0, 0])
         frontier.put([0, 0])
         let reached = {}
-        reached[[0, 0]] = true
-        let current = frontier.get()
         while (!frontier.empty()) {
             let current = frontier.get()
-            let neighborArrayLength = gameGraph.neighbors(current)[current].length
-            // console.log("length", gameGraph.neighbors(current)[].length)
+            let neighborArrayLength = gameGraph.neighbors(current).length
             for (let i = 0; i < neighborArrayLength; i++) {
-                let next = gameGraph.neighbors(current)[current][i]
+                let next = gameGraph.neighbors(current)[i]
                 if (!reached[next]) {
                     frontier.put(next)
-                    reached[next] = true
+                    reached[next] = current
+                    if (arraysEqual(goal, next)) {
+                        return reached
+                    }
                 }
             }
         }
-        console.log("reached", reached)
     }
 
-    pathfinder()
+    function makeThePath(start, goal) {
+        pathfinder(goal)
+        pathArray = []
+        startNode = start
+        let currentNode = reached[goal]
+        while (currentNode !== startNode) {
+            pathArray.push(currentNode)
+            currentNode = reached[currentNode]
+        }
+        console.log(pathArray)
+    }
+
+    makeThePath([0, 0], [420, 200])
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
