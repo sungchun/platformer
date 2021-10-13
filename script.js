@@ -99,42 +99,13 @@ function init() {
     }
 
     let gameGraph = new Graph()
-
-    // //function that finds a path from a start
-    // const pathfinder = function (start, goal) {
-    //     let frontier = new Queue()
-    //     frontier.put(start)
-    //     frontier.put(start)
-    //     let reached = {}
-    //     while (!frontier.empty()) {
-    //         let current = frontier.get()
-    //         let neighborArrayLength = gameGraph.neighbors(current).length
-    //         for (let i = 0; i < neighborArrayLength; i++) {
-    //             let next = gameGraph.neighbors(current)[i]
-    //             if (!reached[next]) {
-    //                 frontier.put(next)
-    //                 reached[next] = current
-    //                 if (arraysEqual(goal, next)) {
-    //                     return reached
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-
-    // function makeThePath(start, goal) {
-    //     let reached = pathfinder(start, goal)
-    //     pathArray = []
-    //     startNode = start
-    //     let currentNode = reached[goal]
-    //     while (currentNode !== startNode) {
-    //         pathArray.push(currentNode)
-    //         currentNode = reached[currentNode]
-    //     }
-    //     console.log(pathArray)
-    // }
-
-    // makeThePath([0, 0], [420, 200])
+    function makeMultipleOfTwenty(x) {
+        newArray = []
+        for (let i = 0; i < x.length; i++) {
+            newArray.push(Math.ceil(x[i] / 20) * 20)
+        }
+        return newArray
+    }
 
     class Enemies {
         constructor(x, y, radius, color) {
@@ -147,6 +118,7 @@ function init() {
             this.dy = 0
             this.goal = [theHero.x, theHero.y]
             this.i = 0
+            this.isChasing = false
         }
 
         drawEnemy() {
@@ -163,34 +135,40 @@ function init() {
             let reached = {}
             while (!frontier.empty()) {
                 let current = frontier.get()
+                if (arraysEqual(current, goal)) {
+                    console.log("breaking")
+                    break
+                }
                 let neighborArrayLength = gameGraph.neighbors(current).length
                 for (let i = 0; i < neighborArrayLength; i++) {
                     let next = gameGraph.neighbors(current)[i]
                     if (!reached[next]) {
                         frontier.put(next)
                         reached[next] = current
-                        if (arraysEqual(goal, next)) {
-                            return reached
-                        }
                     }
                 }
             }
+            return reached
         }
 
         makeThePath(start, goal) {
-            let reached = this.pathfinder(this.position, this.goal)
+            let reached = this.pathfinder(this.position, goal)
             let pathArray = []
             let startNode = start
             let currentNode = reached[goal]
-            while (currentNode !== startNode) {
+            console.log(reached, goal)
+            console.log("current node", currentNode)
+            console.log("start node", startNode)
+            while (!arraysEqual(currentNode, startNode)) {
+                console.log()
                 pathArray.push(currentNode)
                 currentNode = reached[currentNode]
             }
+            console.log("path array", pathArray)
             return pathArray
         }
 
         updateEnemy(path) {
-            console.log(this.x)
             this.dx = (path[this.i][0] - this.x)
             this.dy = (path[this.i][1] - this.y)
             this.x = this.x + this.dx
@@ -200,20 +178,34 @@ function init() {
         movementLoop(path) {
             let i = path.length - 1
             let moveTime = setTimeout(() => {
-                console.log(path[i])
-                this.dx = (path[this.i][0] - this.x) / 5
-                this.dy = (path[this.i][1] - this.y) / 5
+                this.dx = (path[this.i][0] - this.x) / 10
+                this.dy = (path[this.i][1] - this.y) / 10
                 this.x = this.x + this.dx
                 this.y = this.y + this.dy
                 if (i--) {
                     this.movementLoop(path)
                 }
-            }, 300)
+            }, 500)
         }
 
 
-        chase() {
-            this.movementLoop(this.makeThePath(this.position, [theHero.x, theHero.y]))
+        chase(goal) {
+            console.log("trying to follow")
+            console.log(this.makeThePath(this.position, makeMultipleOfTwenty(goal)))
+            this.movementLoop(this.makeThePath(this.position, makeMultipleOfTwenty(goal)))
+        }
+
+        chasing(goal) {
+            if (this.isChasing) {
+                console.log("already chasing")
+                return
+            }
+            console.log("starting to chase again")
+            this.isChasing = true
+            setTimeout(() => {
+                this.chase(goal)
+                this.isChasing = false
+            }, 2000);
         }
     }
 
@@ -388,9 +380,7 @@ function init() {
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
     const enemyOne = new Enemies(20, 20, 15, "blue")
-
-    enemyOne.chase()
-
+    enemyOne.pathfinder(enemyOne.position, [80, 80])
     //making an arrays of things
     enemyArray = []
     platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
@@ -406,19 +396,15 @@ function init() {
             keyArray["click"]["pressed"] = false
         }, 300)
         shotBulletArray.push(bulletArray[j])
-        console.log(shotBulletArray)
         const xCoord = event.clientX - canvas.offsetLeft
         const yCoord = event.clientY - canvas.offsetTop
         const theta = Math.atan2(yCoord - theHero.y, xCoord - theHero.x)
-        console.log("x coord", xCoord)
-        console.log("y coord", yCoord)
         let opposite = Math.cos(theta)
         let adjacent = Math.sin(theta)
         bulletArray[j].x = theHero.x + (theHero.width / 2)
         bulletArray[j].y = theHero.y + (theHero.height / 2)
         bulletArray[j].dx = opposite * 8
         bulletArray[j].dy = adjacent * 8
-        console.log(bulletArray[j].dy, bulletArray[j].dx)
         j++
         if (j === 6) {
             j = 0
@@ -434,6 +420,7 @@ function init() {
             bullet.updateBullet()
             bullet.drawCircle()
         })
+        enemyOne.chasing([theHero.x, theHero.y])
         enemyOne.drawEnemy()
     }
     //clears the canvas and updates canvas
