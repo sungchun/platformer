@@ -6,21 +6,13 @@ body{
     justify-content: center;
     align-items: center;
 }
-/* .grid-div{
-    position: relative;
-    left: 302px;
-    height: 600px;
-    width: 600px;
-    z-index: 1;
-    display: grid;
-    grid-template-columns: repeat(30,  20px);
-    grid-template-rows: repeat(30, 20px);
+.clock{
+    width: 100px;
+    height: 600px;;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }
-
-.grid-div div{
-    border: 1px dotted black;
-} */
-
 canvas{
     z-index: -1;
     /* position: relative;

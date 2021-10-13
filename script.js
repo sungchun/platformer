@@ -116,9 +116,9 @@ function init() {
             this.position = [this.x, this.y]
             this.dx = 0
             this.dy = 0
-            this.goal = [theHero.x, theHero.y]
             this.i = 0
             this.isChasing = false
+            this.path = []
         }
 
         drawEnemy() {
@@ -136,7 +136,6 @@ function init() {
             while (!frontier.empty()) {
                 let current = frontier.get()
                 if (arraysEqual(current, goal)) {
-                    console.log("breaking")
                     break
                 }
                 let neighborArrayLength = gameGraph.neighbors(current).length
@@ -152,60 +151,58 @@ function init() {
         }
 
         makeThePath(start, goal) {
-            let reached = this.pathfinder(this.position, goal)
+            let reached = this.pathfinder(start, goal)
             let pathArray = []
             let startNode = start
+            console.log(reached)
             let currentNode = reached[goal]
-            console.log(reached, goal)
-            console.log("current node", currentNode)
-            console.log("start node", startNode)
             while (!arraysEqual(currentNode, startNode)) {
-                console.log()
+                console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
                 currentNode = reached[currentNode]
             }
-            console.log("path array", pathArray)
+            this.i = pathArray.length - 1
+            this.path = pathArray
             return pathArray
         }
 
-        updateEnemy(path) {
-            this.dx = (path[this.i][0] - this.x)
-            this.dy = (path[this.i][1] - this.y)
+        updateEnemy() {
             this.x = this.x + this.dx
             this.y = this.y + this.dy
         }
 
         movementLoop(path) {
-            let i = path.length - 1
             let moveTime = setTimeout(() => {
                 this.dx = (path[this.i][0] - this.x) / 10
                 this.dy = (path[this.i][1] - this.y) / 10
-                this.x = this.x + this.dx
-                this.y = this.y + this.dy
-                if (i--) {
+                if (this.i--) {
                     this.movementLoop(path)
+                } else {
+                    this.dx = 0
+                    this.dy = 0
                 }
-            }, 500)
+            }, 100)
         }
 
 
         chase(goal) {
-            console.log("trying to follow")
-            console.log(this.makeThePath(this.position, makeMultipleOfTwenty(goal)))
-            this.movementLoop(this.makeThePath(this.position, makeMultipleOfTwenty(goal)))
+            console.log("goal", makeMultipleOfTwenty(goal))
+            console.log(makeMultipleOfTwenty([this.x, this.y]))
+            this.makeThePath(makeMultipleOfTwenty([this.x, this.y]), makeMultipleOfTwenty(goal))
+            this.movementLoop(this.path)
         }
 
         chasing(goal) {
             if (this.isChasing) {
-                console.log("already chasing")
                 return
             }
-            console.log("starting to chase again")
             this.isChasing = true
+            // this.chase(goal)
+            // this.isChasing = false
             setTimeout(() => {
                 this.chase(goal)
                 this.isChasing = false
-            }, 2000);
+            }, 3000);
         }
     }
 
@@ -247,6 +244,8 @@ function init() {
             this.color = color
             this.dx = dx
             this.dy = dy
+            this.centerX = this.x + this.width / 2
+            this.centerY = this.y + this.height / 2
         }
         //this method draws the entity
         drawRect() {
@@ -363,15 +362,15 @@ function init() {
     }
 
     //creating class instances
-    const theHero = new Entity(100, 500, 50, 20, "green", 0, 0)
+    const theHero = new Entity(500, 400, 50, 20, "green", 0, 0)
     const floor = new Entity(-10, 600, 0.1, 620, "black", 0, 0)
-    const bulletOne = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletTwo = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletThree = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletFour = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletFive = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletSix = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
-    const bulletSeven = new Projectile(theHero.x + theHero.width / 2, theHero.y + theHero.height / 2, 3, "red", 0, 0)
+    const bulletOne = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletTwo = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletThree = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletFour = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletFive = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletSix = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletSeven = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
@@ -380,7 +379,7 @@ function init() {
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
     const enemyOne = new Enemies(20, 20, 15, "blue")
-    enemyOne.pathfinder(enemyOne.position, [80, 80])
+
     //making an arrays of things
     enemyArray = []
     platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
@@ -420,7 +419,8 @@ function init() {
             bullet.updateBullet()
             bullet.drawCircle()
         })
-        enemyOne.chasing([theHero.x, theHero.y])
+        enemyOne.chasing([theHero.x + theHero.width / 2, theHero.y + theHero.height / 2])
+        enemyOne.updateEnemy()
         enemyOne.drawEnemy()
     }
     //clears the canvas and updates canvas
@@ -428,32 +428,32 @@ function init() {
         requestAnimationFrame(animate)
         context.clearRect(0, 0, canvas.width, canvas.height)
         update()
-        for (let x = 0; x < 601; x += 20) {
-            context.strokeStyle = "light grey"
-            context.strokeWidth = 1
-            context.beginPath()
-            context.moveTo(x, 0)
-            context.lineTo(x, canvas.height)
-            context.stroke()
+        // for (let x = 0; x < 601; x += 20) {
+        //     context.strokeStyle = "light grey"
+        //     context.strokeWidth = 1
+        //     context.beginPath()
+        //     context.moveTo(x, 0)
+        //     context.lineTo(x, canvas.height)
+        //     context.stroke()
 
-        }
-        for (let y = 0; y < 601; y += 20) {
-            context.strokeStyle = "light grey"
-            context.strokeWidth = 1
-            context.beginPath()
-            context.moveTo(0, y)
-            context.lineTo(canvas.width, y)
-            context.stroke()
-        }
-        for (let x = 0; x < 601; x += 20) {
-            for (let y = 0; y < 601; y += 20) {
-                nodeArray.push([x, y])
-                context.beginPath()
-                context.arc(x, y, 2, 0, Math.PI * 2, false)
-                context.fillStyle = "blue"
-                context.fill()
-            }
-        }
+        // }
+        // for (let y = 0; y < 601; y += 20) {
+        //     context.strokeStyle = "light grey"
+        //     context.strokeWidth = 1
+        //     context.beginPath()
+        //     context.moveTo(0, y)
+        //     context.lineTo(canvas.width, y)
+        //     context.stroke()
+        // }
+        // for (let x = 0; x < 601; x += 20) {
+        //     for (let y = 0; y < 601; y += 20) {
+        //         nodeArray.push([x, y])
+        //         context.beginPath()
+        //         context.arc(x, y, 2, 0, Math.PI * 2, false)
+        //         context.fillStyle = "blue"
+        //         context.fill()
+        //     }
+        // }
     }
     animate()
 
@@ -461,6 +461,4 @@ function init() {
     addEventListener("keyup", theHero.stop)
     addEventListener("click", whereDoIShoot)
 }
-
-
 addEventListener("DOMContentLoaded", init)
