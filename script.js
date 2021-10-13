@@ -107,6 +107,27 @@ function init() {
         return newArray
     }
 
+    function calculateCircleVelocity(dx1, dy1, v) {
+        if (!dx1) {
+            return [0, v]
+        } else if (!dy1) {
+            return [v, 0]
+        }
+        let h = Math.hypot(dx1, dy1)
+        let dy2 = h * v / Math.sqrt((dx1 / dy1) ** 2 + 1)
+        let dx2 = dy2 * (dx1 / dy1)
+        if (dx1 < 0) {
+            dx2 = dx2 * -1
+        }
+        if (dx2 < 0) {
+            dy2 = dy2 * -1
+        }
+        console.log("h", h)
+        console.log("dy2", dy2)
+        console.log("dx2", dx2)
+        return [dx2, dy2]
+    }
+
     class Enemies {
         constructor(x, y, radius, color) {
             this.x = x
@@ -117,6 +138,7 @@ function init() {
             this.dx = 0
             this.dy = 0
             this.i = 0
+            this.velocity = 0.05
             this.isChasing = false
             this.path = []
         }
@@ -173,17 +195,23 @@ function init() {
 
         movementLoop(path) {
             let moveTime = setTimeout(() => {
-                this.dx = (path[this.i][0] - this.x) / 10
-                this.dy = (path[this.i][1] - this.y) / 10
+                let dx = path[this.i][0] - this.x
+                let dy = path[this.i][1] - this.y
+                console.log("path coords", path[this.i][0], path[this.i][1])
+                console.log("thises", this.x, this.y)
+                let velocities = calculateCircleVelocity(dx, dy, this.velocity)
+                console.log("velocities", velocities)
+                this.dx = velocities[0]
+                this.dy = velocities[1]
                 if (this.i--) {
                     this.movementLoop(path)
                 } else {
+                    this.path = []
                     this.dx = 0
                     this.dy = 0
                 }
             }, 100)
         }
-
 
         chase(goal) {
             console.log("goal", makeMultipleOfTwenty(goal))
@@ -202,7 +230,7 @@ function init() {
             setTimeout(() => {
                 this.chase(goal)
                 this.isChasing = false
-            }, 3000);
+            }, 300);
         }
     }
 
