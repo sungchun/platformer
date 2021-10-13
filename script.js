@@ -1,6 +1,13 @@
 function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
+
+    // This is an object that keeps track of the properties of relevant keys
+    keyArray = {
+        "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
+    }
+    let doWeStop = false
+    standingOn = null
     //empty array to be filled with nodes
     nodeArray = []
     noGoNodes = [[60, 120], [80, 120], [100, 120], [120, 120], [140, 120], [160, 120], [180, 120], [200, 120], [220, 120],
@@ -93,47 +100,122 @@ function init() {
 
     let gameGraph = new Graph()
 
-    //function that finds a path from a start
-    const pathfinder = function (start, goal) {
-        let frontier = new Queue()
-        frontier.put(start)
-        frontier.put(start)
-        let reached = {}
-        while (!frontier.empty()) {
-            let current = frontier.get()
-            let neighborArrayLength = gameGraph.neighbors(current).length
-            for (let i = 0; i < neighborArrayLength; i++) {
-                let next = gameGraph.neighbors(current)[i]
-                if (!reached[next]) {
-                    frontier.put(next)
-                    reached[next] = current
-                    if (arraysEqual(goal, next)) {
-                        return reached
+    // //function that finds a path from a start
+    // const pathfinder = function (start, goal) {
+    //     let frontier = new Queue()
+    //     frontier.put(start)
+    //     frontier.put(start)
+    //     let reached = {}
+    //     while (!frontier.empty()) {
+    //         let current = frontier.get()
+    //         let neighborArrayLength = gameGraph.neighbors(current).length
+    //         for (let i = 0; i < neighborArrayLength; i++) {
+    //             let next = gameGraph.neighbors(current)[i]
+    //             if (!reached[next]) {
+    //                 frontier.put(next)
+    //                 reached[next] = current
+    //                 if (arraysEqual(goal, next)) {
+    //                     return reached
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
+
+    // function makeThePath(start, goal) {
+    //     let reached = pathfinder(start, goal)
+    //     pathArray = []
+    //     startNode = start
+    //     let currentNode = reached[goal]
+    //     while (currentNode !== startNode) {
+    //         pathArray.push(currentNode)
+    //         currentNode = reached[currentNode]
+    //     }
+    //     console.log(pathArray)
+    // }
+
+    // makeThePath([0, 0], [420, 200])
+
+    class Enemies {
+        constructor(x, y, radius, color) {
+            this.x = x
+            this.y = y
+            this.radius = radius
+            this.color = color
+            this.position = [this.x, this.y]
+            this.dx = 0
+            this.dy = 0
+            this.goal = [theHero.x, theHero.y]
+            this.i = 0
+        }
+
+        drawEnemy() {
+            context.beginPath()
+            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+            context.fillStyle = this.color
+            context.fill()
+        }
+
+        pathfinder = function (start, goal) {
+            let frontier = new Queue()
+            frontier.put(start)
+            frontier.put(start)
+            let reached = {}
+            while (!frontier.empty()) {
+                let current = frontier.get()
+                let neighborArrayLength = gameGraph.neighbors(current).length
+                for (let i = 0; i < neighborArrayLength; i++) {
+                    let next = gameGraph.neighbors(current)[i]
+                    if (!reached[next]) {
+                        frontier.put(next)
+                        reached[next] = current
+                        if (arraysEqual(goal, next)) {
+                            return reached
+                        }
                     }
                 }
             }
         }
-    }
 
-    function makeThePath(start, goal) {
-        let reached = pathfinder(start, goal)
-        pathArray = []
-        startNode = start
-        let currentNode = reached[goal]
-        while (currentNode !== startNode) {
-            pathArray.push(currentNode)
-            currentNode = reached[currentNode]
+        makeThePath(start, goal) {
+            let reached = this.pathfinder(this.position, this.goal)
+            let pathArray = []
+            let startNode = start
+            let currentNode = reached[goal]
+            while (currentNode !== startNode) {
+                pathArray.push(currentNode)
+                currentNode = reached[currentNode]
+            }
+            return pathArray
         }
-        console.log(pathArray)
-    }
 
-    makeThePath([0, 0], [420, 200])
-    // This is an object that keeps track of the properties of relevant keys
-    keyArray = {
-        "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
+        updateEnemy(path) {
+            console.log(this.x)
+            this.dx = (path[this.i][0] - this.x)
+            this.dy = (path[this.i][1] - this.y)
+            this.x = this.x + this.dx
+            this.y = this.y + this.dy
+        }
+
+        movementLoop(path) {
+            let i = path.length - 1
+            let moveTime = setTimeout(() => {
+                console.log(path[i])
+                this.dx = (path[this.i][0] - this.x) / 5
+                this.dy = (path[this.i][1] - this.y) / 5
+                this.x = this.x + this.dx
+                this.y = this.y + this.dy
+                if (i--) {
+                    this.movementLoop(path)
+                }
+            }, 300)
+        }
+
+
+        chase() {
+            this.movementLoop(this.makeThePath(this.position, [theHero.x, theHero.y]))
+        }
     }
-    let doWeStop = false
-    standingOn = null
 
     class Projectile {
         constructor(x, y, radius, color, dx, dy) {
@@ -305,7 +387,13 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
+    const enemyOne = new Enemies(20, 20, 15, "blue")
 
+    enemyOne.chase()
+
+    //making an arrays of things
+    enemyArray = []
+    platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
     bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     shotBulletArray = []
     let j = 0
@@ -336,10 +424,6 @@ function init() {
             j = 0
         }
     }
-
-    //making an array of platforms
-    platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
-
     //updates the canvas by drawing the entities' in new positions
     function update() {
         platformArray.forEach(platform => platform.drawRect())
@@ -350,6 +434,7 @@ function init() {
             bullet.updateBullet()
             bullet.drawCircle()
         })
+        enemyOne.drawEnemy()
     }
     //clears the canvas and updates canvas
     function animate() {
