@@ -94,10 +94,10 @@ function init() {
     let gameGraph = new Graph()
 
     //function that finds a path from a start
-    const pathfinder = function (goal) {
+    const pathfinder = function (start, goal) {
         let frontier = new Queue()
-        frontier.put([0, 0])
-        frontier.put([0, 0])
+        frontier.put(start)
+        frontier.put(start)
         let reached = {}
         while (!frontier.empty()) {
             let current = frontier.get()
@@ -116,7 +116,7 @@ function init() {
     }
 
     function makeThePath(start, goal) {
-        pathfinder(goal)
+        let reached = pathfinder(start, goal)
         pathArray = []
         startNode = start
         let currentNode = reached[goal]
