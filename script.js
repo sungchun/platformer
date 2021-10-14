@@ -8,6 +8,14 @@ function init() {
     }
     let doWeStop = false
     standingOn = null
+    let heroLives = 3
+    let heroDamaged = false
+
+    function heroDead() {
+        if (heroLives <= 0) {
+            window.alert("GG")
+        }
+    }
     //empty array to be filled with nodes
     nodeArray = []
     noGoNodes = [[60, 120], [80, 120], [100, 120], [120, 120], [140, 120], [160, 120], [180, 120], [200, 120], [220, 120],
@@ -157,6 +165,7 @@ function init() {
             this.y = y
             this.radius = radius
             this.color = color
+            this.lives = 3
             this.position = [this.x, this.y]
             this.dx = 0
             this.dy = 0
@@ -165,6 +174,23 @@ function init() {
             this.isChasing = false
             this.path = []
         }
+
+        touchedHero() {
+            let xDifference = theHero.x - this.x
+            let yDifference = theHero.y - this.y
+            let hDistance = Math.hypot(yDifference, xDifference)
+            if (hDistance <= this.radius * 1.2 && !heroDamaged) {
+                heroLives--
+                heroDamaged = true
+                theHero.color = "lightgreen"
+                console.log("lives", heroLives)
+                setTimeout(() => {
+                    heroDamaged = false
+                    theHero.color = "green"
+                }, 500)
+            }
+        }
+
 
         drawEnemy() {
             context.beginPath()
@@ -195,7 +221,6 @@ function init() {
                 newArray[0] += 20
                 newArray[1] += 20
             }
-            console.log(newArray)
             return newArray
         }
 
@@ -242,9 +267,9 @@ function init() {
             let pathArray = [goal]
             let startNode = start
             let currentNode = reached[goal]
-            console.log("enemy coords", this.x, this.y)
-            console.log("hero coords", theHero.x, theHero.y)
-            console.log("goal", goal)
+            // console.log("enemy coords", this.x, this.y)
+            // console.log("hero coords", theHero.x, theHero.y)
+            // console.log("goal", goal)
             while (!arraysEqual(currentNode, startNode)) {
                 // console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
@@ -260,7 +285,6 @@ function init() {
         }
 
         movementLoop() {
-            console.log(this.path)
             let moveTime = setTimeout(() => {
                 if (this.path.length < 1) {
                     return
@@ -280,7 +304,6 @@ function init() {
                 if (this.i > 0) {
                     this.movementLoop()
                 } else {
-                    console.log("zero")
                     this.path = []
                     this.dx = 0
                     this.dy = 0
@@ -293,6 +316,7 @@ function init() {
         updateEnemy() {
             this.x = this.x + this.dx
             this.y = this.y + this.dy
+            this.touchedHero()
         }
 
         chase(goal) {
@@ -307,7 +331,6 @@ function init() {
                 return
             }
             this.isChasing = true
-            console.log("the hero position", theHero.x, theHero.y)
             // this.chase(goal)
             // this.isChasing = false
             setTimeout(() => {
@@ -343,6 +366,26 @@ function init() {
             context.fillStyle = this.color
             context.fill()
         }
+
+        hitEnemy() {
+            return enemyArray.find((enemy) => {
+                let xDifference = enemy.x - this.x
+                let yDifference = enemy.y - this.y
+                let hDistance = Math.hypot(xDifference, yDifference)
+                // console.log("bullet radius", this.radius)
+                // console.log("enemy radius", enemy.radius)
+                if ((this.radius + enemy.radius) > hDistance) {
+                    enemy.lives--
+                    console.log("enemy hit", enemy.lives)
+                    return enemy
+                }
+            })
+        }
+
+        hitPlatform() {
+
+        }
+
     }
 
     // this is the class that creates entities like the player and the enemies
@@ -419,7 +462,7 @@ function init() {
         //checks to see which platform is closest
         isOnPlatform() {
             let feet = this.height + this.y
-            const rightSide = this.x + this.width
+            let rightSide = this.x + this.width
             let xPos = this.x
             return platformArray.find(function (platform) {
                 const checkX = (xPos >= platform.x && rightSide <= platform.x + platform.width)
@@ -489,14 +532,13 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(280, 300, 15, "blue", 0.05)
-    // const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
-    // const enemyThree = new Enemies(20, 20, 15, "blue", 0.025)
-    // const enemyFour = new Enemies(20, 20, 15, "blue", 0.05)
+    const enemyOne = new Enemies(560, 20, 15, "blue", 0.01)
+    const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
+    const enemyThree = new Enemies(40, 20, 15, "blue", 0.02)
+    const enemyFour = new Enemies(20, 20, 15, "blue", 0.03)
 
     //making an arrays of things
-    enemyArray = [enemyOne]
-    // , enemyTwo, enemyThree, enemyFour]
+    enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour]
     platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
     bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     shotBulletArray = []
@@ -528,12 +570,14 @@ function init() {
     //updates the canvas by drawing the entities' in new positions
     function update() {
         platformArray.forEach(platform => platform.drawRect())
+        heroDead()
         theHero.updateHeroPos()
         theHero.playerGravity()
         theHero.drawRect()
         shotBulletArray.forEach(bullet => {
             bullet.updateBullet()
             bullet.drawCircle()
+            bullet.hitEnemy()
         })
         enemyArray.forEach(enemy => {
             enemy.chasing([theHero.x + theHero.width / 2, theHero.y])
