@@ -238,14 +238,16 @@ function init() {
                 newArray[0] += 20
                 newArray[1] += 20
             }
-            // if(newArray[0] < 0){
-            //     newArray[0] = 0
-            // }else if(newArray[0] > 600){
-            //     newArray[0] = 600
-            // }
-            // if(newArray[1 < 0]){
-
-            // }
+            if (newArray[0] < 0) {
+                newArray[0] = 0
+            } else if (newArray[0] > 600) {
+                newArray[0] = 600
+            }
+            if (newArray[1] < 0) {
+                newArray[1] = 0
+            } else if (newArray[1] > 600) {
+                newArray[1] = 600
+            }
             return newArray
         }
 
