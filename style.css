@@ -9,13 +9,38 @@ body{
     justify-content: center;
     align-items: center;
 }
-.clock{
-    width: 100px;
-    height: 600px;;
+.stats{
+    position: relative;
+    left: -20px;
+    border: 2px solid black;
+    height: 600px;
+    width: 220px;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
 }
+
+.stats div{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+}
+
+.stats div p{
+    position: relative;
+    font-size: 50px;
+    top: -50px;
+}
+
+.stats div:last-of-type div{
+    position: relative;
+    font-size: 50px;
+    top: -10px;
+}
+
 canvas{
     z-index: -1;
     position: relative;

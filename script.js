@@ -1,7 +1,17 @@
 function init() {
     const canvas = document.querySelector("canvas")
     const context = canvas.getContext("2d")
+    const score = document.querySelector("#score")
+    const livesRemaining = document.querySelector("#lives")
 
+    let points = 0
+    function incrementScore() {
+        let scoreInterval = setInterval(() => {
+            points += 50
+            score.innerHTML = `${points}`
+        }, 10000);
+    }
+    incrementScore()
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
@@ -188,6 +198,7 @@ function init() {
             let hDistance = Math.hypot(yDifference, xDifference)
             if (hDistance <= this.radius * 1.2 && !heroDamaged) {
                 heroLives--
+                livesRemaining.innerHTML = `${heroLives}`
                 heroDamaged = true
                 theHero.color = "lightgreen"
                 console.log("lives", heroLives)
@@ -402,6 +413,7 @@ function init() {
                 // console.log("bullet radius", this.radius)
                 // console.log("enemy radius", enemy.radius)
                 if ((this.radius + enemy.radius) > hDistance) {
+                    points += 50
                     enemy.lives--
                     enemy.color = enemy.moreColors[enemy.lives]
                     shotBulletArray.splice(shotBulletArray.indexOf(this), 1)
@@ -546,13 +558,13 @@ function init() {
     //creating class instances
     const theHero = new Entity(300, 300, 50, 20, "green", 0, 0)
     const floor = new Entity(-10, 600, 0.1, 620, "black", 0, 0)
-    const bulletOne = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
-    const bulletTwo = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
-    const bulletThree = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
-    const bulletFour = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
-    const bulletFive = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
-    const bulletSix = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
-    const bulletSeven = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
+    const bulletOne = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const bulletTwo = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const bulletThree = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const bulletFour = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const bulletFive = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const bulletSix = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const bulletSeven = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
@@ -560,9 +572,9 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.01)
-    const enemyTwo = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.05)
-    const enemyThree = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.02)
+    const enemyOne = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemyTwo = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemyThree = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
     const enemyFour = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
     const enemyFive = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
     const enemySix = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
@@ -579,11 +591,14 @@ function init() {
         enemyBench.put(enemyArray[i])
     }
 
+    let spawnTiming = 5000
+    let i = 0
+    let howManyPoints = points
     function spawnEnemies() {
-        let i = 0
-        let spawningInterval = setInterval(() => {
-            console.log(i)
-            console.log(spawnedEnemiesArray)
+        let spawningInterval = setTimeout(() => {
+            if ((points - howManyPoints) >= 500 && spawnTiming > 500) {
+                spawnTiming -= 500
+            }
             if (!enemyBench.empty()) {
                 spawnedEnemiesArray.push(enemyBench.get())
                 i++
@@ -591,8 +606,10 @@ function init() {
                     i = 0
                 }
             }
-
-        }, 500)
+            if (heroLives > 0) {
+                spawnEnemies()
+            }
+        }, spawnTiming)
     }
     spawnEnemies()
     let bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
