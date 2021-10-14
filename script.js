@@ -165,7 +165,8 @@ function init() {
             this.y = y
             this.radius = radius
             this.color = color
-            this.lives = 3
+            this.moreColors = ["red", "purple"]
+            this.lives = 2
             this.position = [this.x, this.y]
             this.dx = 0
             this.dy = 0
@@ -191,6 +192,11 @@ function init() {
             }
         }
 
+        dying() {
+            if (this.lives <= 0) {
+                enemyArray.splice(enemyArray.indexOf(this), 1)
+            }
+        }
 
         drawEnemy() {
             context.beginPath()
@@ -376,7 +382,8 @@ function init() {
                 // console.log("enemy radius", enemy.radius)
                 if ((this.radius + enemy.radius) > hDistance) {
                     enemy.lives--
-                    console.log("enemy hit", enemy.lives)
+                    enemy.color = enemy.moreColors[enemy.lives]
+                    shotBulletArray.splice(shotBulletArray.indexOf(this), 1)
                     return enemy
                 }
             })
@@ -583,7 +590,9 @@ function init() {
             enemy.chasing([theHero.x + theHero.width / 2, theHero.y])
             enemy.updateEnemy()
             enemy.drawEnemy()
+            enemy.dying()
         })
+
 
     }
     //clears the canvas and updates canvas
