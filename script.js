@@ -54,6 +54,7 @@ function init() {
     }
     //to check if two arrays are the same
     function arraysEqual(arr1, arr2) {
+        // console.log("arrays", arr1, arr1.length, arr2)
         for (let i = 0; i < arr1.length; i++) {
             if (arr1[i] !== arr2[i]) {
                 return false
@@ -176,41 +177,49 @@ function init() {
             let reached = this.pathfinder(start, goal)
             let pathArray = []
             let startNode = start
-            console.log(reached)
             let currentNode = reached[goal]
+            // console.log("reached", reached)
+            // console.log("current node", currentNode)
             while (!arraysEqual(currentNode, startNode)) {
-                console.log("nodes", currentNode, startNode)
+                // console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
                 currentNode = reached[currentNode]
             }
-            this.i = pathArray.length - 1
+
             this.path = pathArray
+            this.i = pathArray.length - 1
+            console.log("KLASHJDFKSAHDF")
+            console.log("path array", pathArray, "this.array", this.path)
             return pathArray
         }
 
-        updateEnemy() {
-            this.x = this.x + this.dx
-            this.y = this.y + this.dy
-        }
-
-        movementLoop(path) {
+        movementLoop() {
             let moveTime = setTimeout(() => {
-                let dx = path[this.i][0] - this.x
-                let dy = path[this.i][1] - this.y
-                console.log("path coords", path[this.i][0], path[this.i][1])
-                console.log("thises", this.x, this.y)
+                console.log("path array in movement loop", this.path)
+                console.log("path array index", this.i)
+                console.log("path item", this.path[this.i])
+                let dx = this.path[this.i][0] - this.x
+                let dy = this.path[this.i][1] - this.y
+                // console.log("path coords", path[this.i][0], path[this.i][1])
+                // console.log("thises", this.x, this.y)
                 let velocities = calculateCircleVelocity(dx, dy, this.velocity)
-                console.log("velocities", velocities)
+                // console.log("velocities", velocities)
                 this.dx = velocities[0]
                 this.dy = velocities[1]
                 if (this.i--) {
-                    this.movementLoop(path)
+                    this.movementLoop()
                 } else {
+                    console.log("zero")
                     this.path = []
                     this.dx = 0
                     this.dy = 0
+                    return
                 }
-            }, 100)
+            }, 300)
+        }
+        updateEnemy() {
+            this.x = this.x + this.dx
+            this.y = this.y + this.dy
         }
 
         chase(goal) {
@@ -230,7 +239,7 @@ function init() {
             setTimeout(() => {
                 this.chase(goal)
                 this.isChasing = false
-            }, 300);
+            }, 1000);
         }
     }
 
