@@ -41,6 +41,7 @@ function init() {
     [340, 480], [260, 480], [340, 460], [360, 460], [380, 460], [400, 460], [420, 460], [440, 460], [460, 460], [480, 460], [500, 460], [520, 460], [540, 460], [560, 460],
     [340, 500], [360, 500], [380, 500], [400, 500], [420, 500], [440, 500], [460, 500], [480, 500], [500, 500], [520, 500], [540, 500], [560, 500]
     ]
+
     //for loop that pushes all nodes to node array
     for (let x = 0; x < 601; x += 20) {
         for (let y = 0; y < 601; y += 20) {
@@ -159,13 +160,18 @@ function init() {
         return [dx2, dy2]
     }
 
+    let spawnsArray = [[20, 20], [580, 20], [20, 580], [580, 580]]
+    function randomSpawn() {
+        return spawnsArray[Math.floor(Math.random() * 4)]
+    }
+
     class Enemies {
         constructor(x, y, radius, color, velocity) {
             this.x = x
             this.y = y
             this.radius = radius
             this.color = color
-            this.moreColors = ["red", "purple"]
+            this.moreColors = ["lightgrey", "red", "purple"]
             this.lives = 2
             this.position = [this.x, this.y]
             this.dx = 0
@@ -193,8 +199,14 @@ function init() {
         }
 
         dying() {
-            if (this.lives <= 0) {
-                enemyArray.splice(enemyArray.indexOf(this), 1)
+            if (this.lives <= -1) {
+                spawnedEnemiesArray.splice(spawnedEnemiesArray.indexOf(this), 1)
+                enemyBench.put(this)
+                this.lives = 2
+                this.color = "blue"
+                let newSpawn = randomSpawn()
+                this.x = newSpawn[0]
+                this.y = newSpawn[1]
             }
         }
 
@@ -220,13 +232,20 @@ function init() {
             } else {
                 newArray.push((Math.ceil(x[1] / 20) * 20) + 20)
             }
-
             while (noGoNodes.find(item => {
                 return arraysEqual(newArray, item)
             })) {
                 newArray[0] += 20
                 newArray[1] += 20
             }
+            // if(newArray[0] < 0){
+            //     newArray[0] = 0
+            // }else if(newArray[0] > 600){
+            //     newArray[0] = 600
+            // }
+            // if(newArray[1 < 0]){
+
+            // }
             return newArray
         }
 
@@ -374,7 +393,7 @@ function init() {
         }
 
         hitEnemy() {
-            return enemyArray.find((enemy) => {
+            return spawnedEnemiesArray.find((enemy) => {
                 let xDifference = enemy.x - this.x
                 let yDifference = enemy.y - this.y
                 let hDistance = Math.hypot(xDifference, yDifference)
@@ -539,16 +558,43 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(560, 20, 15, "blue", 0.01)
-    const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
-    const enemyThree = new Enemies(40, 20, 15, "blue", 0.02)
-    const enemyFour = new Enemies(20, 20, 15, "blue", 0.03)
+    const enemyOne = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.01)
+    const enemyTwo = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.05)
+    const enemyThree = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.02)
+    const enemyFour = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemyFive = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemySix = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemySeven = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemyEight = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
 
     //making an arrays of things
-    enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour]
-    platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
-    bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
-    shotBulletArray = []
+    let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight]
+    let spawnedEnemiesArray = []
+    let platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
+
+    let enemyBench = new Queue()
+    for (let i = 0; i < enemyArray.length; i++) {
+        enemyBench.put(enemyArray[i])
+    }
+
+    function spawnEnemies() {
+        let i = 0
+        let spawningInterval = setInterval(() => {
+            console.log(i)
+            console.log(spawnedEnemiesArray)
+            if (!enemyBench.empty()) {
+                spawnedEnemiesArray.push(enemyBench.get())
+                i++
+                if (i >= 8) {
+                    i = 0
+                }
+            }
+
+        }, 500)
+    }
+    spawnEnemies()
+    let bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
+    let shotBulletArray = []
     let j = 0
     function whereDoIShoot(event) {
         if (keyArray["click"]["pressed"]) {
@@ -586,7 +632,7 @@ function init() {
             bullet.drawCircle()
             bullet.hitEnemy()
         })
-        enemyArray.forEach(enemy => {
+        spawnedEnemiesArray.forEach(enemy => {
             enemy.chasing([theHero.x + theHero.width / 2, theHero.y])
             enemy.updateEnemy()
             enemy.drawEnemy()
