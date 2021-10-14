@@ -175,13 +175,34 @@ function init() {
 
         makeMultipleOfTwentyTwo(x) {
             let horizontal = x[0] - this.x
+            let vertical = x[1] - this.y
+            let newArray = []
+            // console.log("og thises", this.x, this.y)
+            if (horizontal < 0) {
+                newArray.push((Math.floor(x[0] / 20) * 20) - 20)
+            } else {
+                newArray.push((Math.ceil(x[0] / 20) * 20) + 20)
+            }
+            if (vertical < 0) {
+                newArray.push((Math.floor(x[1] / 20) * 20) - 20)
+            } else {
+                newArray.push((Math.ceil(x[1] / 20) * 20) + 20)
+            }
+
+            while (noGoNodes.find(item => {
+                return arraysEqual(newArray, item)
+            })) {
+                newArray[0] += 20
+                newArray[1] += 20
+            }
+            console.log(newArray)
+            return newArray
+        }
+
+        ensureNotRestrictedNode(x) {
             let newArray = []
             for (let i = 0; i < x.length; i++) {
-                if (horizontal < 0) {
-                    newArray.push(Math.floor(x[i] / 20) * 20)
-                } else {
-                    newArray.push(Math.ceil(x[i] / 20) * 20)
-                }
+                newArray.push(Math.floor(x[i] / 20) * 20)
             }
             while (noGoNodes.find(item => {
                 return arraysEqual(newArray, item)
@@ -191,6 +212,8 @@ function init() {
             }
             return newArray
         }
+
+
 
         pathfinder = function (start, goal) {
             let frontier = new Queue()
@@ -216,11 +239,12 @@ function init() {
 
         makeThePath(start, goal) {
             let reached = this.pathfinder(start, goal)
-            let pathArray = []
+            let pathArray = [goal]
             let startNode = start
             let currentNode = reached[goal]
-            // console.log("reached", reached)
-            // console.log("goal", goal)
+            console.log("enemy coords", this.x, this.y)
+            console.log("hero coords", theHero.x, theHero.y)
+            console.log("goal", goal)
             while (!arraysEqual(currentNode, startNode)) {
                 // console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
@@ -236,6 +260,7 @@ function init() {
         }
 
         movementLoop() {
+            console.log(this.path)
             let moveTime = setTimeout(() => {
                 if (this.path.length < 1) {
                     return
@@ -273,7 +298,7 @@ function init() {
         chase(goal) {
             // console.log("goal", makeMultipleOfTwenty(goal))
             // console.log(makeMultipleOfTwenty([this.x, this.y]))
-            this.makeThePath(makeMultipleOfTwentyOne(this.makeMultipleOfTwentyTwo([this.x, this.y])), this.makeMultipleOfTwentyTwo(goal))
+            this.makeThePath(makeMultipleOfTwentyOne(this.ensureNotRestrictedNode([this.x, this.y])), this.makeMultipleOfTwentyTwo(goal))
             this.movementLoop(this.path)
         }
 
@@ -282,12 +307,13 @@ function init() {
                 return
             }
             this.isChasing = true
+            console.log("the hero position", theHero.x, theHero.y)
             // this.chase(goal)
             // this.isChasing = false
             setTimeout(() => {
                 this.chase(goal)
                 this.isChasing = false
-            }, 800);
+            }, 600);
         }
     }
 
@@ -447,7 +473,7 @@ function init() {
     }
 
     //creating class instances
-    const theHero = new Entity(550, 500, 50, 20, "green", 0, 0)
+    const theHero = new Entity(300, 300, 50, 20, "green", 0, 0)
     const floor = new Entity(-10, 600, 0.1, 620, "black", 0, 0)
     const bulletOne = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
     const bulletTwo = new Projectile(theHero.centerX, theHero.centerY, 3, "red", 0, 0)
@@ -463,13 +489,14 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(10, 20, 15, "blue", 0.05)
-    const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
-    const enemyThree = new Enemies(20, 20, 15, "blue", 0.025)
-    const enemyFour = new Enemies(20, 20, 15, "blue", 0.05)
+    const enemyOne = new Enemies(280, 300, 15, "blue", 0.05)
+    // const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
+    // const enemyThree = new Enemies(20, 20, 15, "blue", 0.025)
+    // const enemyFour = new Enemies(20, 20, 15, "blue", 0.05)
 
     //making an arrays of things
-    enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour]
+    enemyArray = [enemyOne]
+    // , enemyTwo, enemyThree, enemyFour]
     platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
     bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     shotBulletArray = []
@@ -509,7 +536,7 @@ function init() {
             bullet.drawCircle()
         })
         enemyArray.forEach(enemy => {
-            enemy.chasing([theHero.x + theHero.width / 2, theHero.y + theHero.height / 2])
+            enemy.chasing([theHero.x + theHero.width / 2, theHero.y])
             enemy.updateEnemy()
             enemy.drawEnemy()
         })
