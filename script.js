@@ -152,7 +152,7 @@ function init() {
     }
 
     class Enemies {
-        constructor(x, y, radius, color) {
+        constructor(x, y, radius, color, velocity) {
             this.x = x
             this.y = y
             this.radius = radius
@@ -161,7 +161,7 @@ function init() {
             this.dx = 0
             this.dy = 0
             this.i = 0
-            this.velocity = 0.1
+            this.velocity = velocity
             this.isChasing = false
             this.path = []
         }
@@ -220,14 +220,14 @@ function init() {
             let pathArray = []
             let startNode = start
             let currentNode = reached[goal]
-            console.log("reached", reached)
-            console.log("goal", goal)
+            // console.log("reached", reached)
+            // console.log("goal", goal)
             while (!arraysEqual(currentNode, startNode)) {
-                console.log("nodes", currentNode, startNode)
+                // console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
-                console.log("current node", currentNode)
+                // console.log("current node", currentNode)
                 currentNode = reached[currentNode]
-                console.log("new current node", currentNode)
+                // console.log("new current node", currentNode)
             }
             this.path = pathArray
             this.i = pathArray.length - 1
@@ -241,9 +241,9 @@ function init() {
                 if (this.path.length < 1) {
                     return
                 }
-                console.log("path array in movement loop", this.path)
-                console.log("path array index", this.i)
-                console.log("path item", this.path[this.i])
+                // console.log("path array in movement loop", this.path)
+                // console.log("path array index", this.i)
+                // console.log("path item", this.path[this.i])
                 let dx = this.path[this.i][0] - this.x
                 let dy = this.path[this.i][1] - this.y
                 // console.log("path coords", path[this.i][0], path[this.i][1])
@@ -264,7 +264,7 @@ function init() {
                     this.isChasing = false
                     return
                 }
-            }, 300)
+            }, 400)
         }
         updateEnemy() {
             this.x = this.x + this.dx
@@ -288,7 +288,7 @@ function init() {
             setTimeout(() => {
                 this.chase(goal)
                 this.isChasing = false
-            }, 1000);
+            }, 800);
         }
     }
 
@@ -464,10 +464,13 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(10, 20, 15, "blue")
+    const enemyOne = new Enemies(10, 20, 15, "blue", 0.05a)
+    const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
+    const enemyThree = new Enemies(20, 20, 15, "blue", 0.025)
+    const enemyFour = new Enemies(20, 20, 15, "blue", 0.05)
 
     //making an arrays of things
-    enemyArray = []
+    enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour]
     platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
     bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     shotBulletArray = []
@@ -506,9 +509,12 @@ function init() {
             bullet.updateBullet()
             bullet.drawCircle()
         })
-        enemyOne.chasing([theHero.x + theHero.width / 2, theHero.y + theHero.height / 2])
-        enemyOne.updateEnemy()
-        enemyOne.drawEnemy()
+        enemyArray.forEach(enemy => {
+            enemy.chasing([theHero.x + theHero.width / 2, theHero.y + theHero.height / 2])
+            enemy.updateEnemy()
+            enemy.drawEnemy()
+        })
+
     }
     //clears the canvas and updates canvas
     function animate() {
