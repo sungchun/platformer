@@ -175,7 +175,7 @@ function init() {
 
         makeMultipleOfTwentyTwo(x) {
             let horizontal = x[0] - this.x
-            newArray = []
+            let newArray = []
             for (let i = 0; i < x.length; i++) {
                 if (horizontal < 0) {
                     newArray.push(Math.floor(x[i] / 20) * 20)
@@ -183,7 +183,6 @@ function init() {
                     newArray.push(Math.ceil(x[i] / 20) * 20)
                 }
             }
-
             while (noGoNodes.find(item => {
                 return arraysEqual(newArray, item)
             })) {
@@ -274,7 +273,7 @@ function init() {
         chase(goal) {
             // console.log("goal", makeMultipleOfTwenty(goal))
             // console.log(makeMultipleOfTwenty([this.x, this.y]))
-            this.makeThePath(makeMultipleOfTwentyOne([this.x, this.y]), this.makeMultipleOfTwentyTwo(goal))
+            this.makeThePath(makeMultipleOfTwentyOne(this.makeMultipleOfTwentyTwo([this.x, this.y])), this.makeMultipleOfTwentyTwo(goal))
             this.movementLoop(this.path)
         }
 
@@ -464,7 +463,7 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(10, 20, 15, "blue", 0.05a)
+    const enemyOne = new Enemies(10, 20, 15, "blue", 0.05)
     const enemyTwo = new Enemies(500, 20, 15, "blue", 0.05)
     const enemyThree = new Enemies(20, 20, 15, "blue", 0.025)
     const enemyFour = new Enemies(20, 20, 15, "blue", 0.05)
