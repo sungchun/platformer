@@ -23,12 +23,11 @@ function init() {
     [360, 140], [380, 140], [400, 140], [420, 140], [440, 140], [460, 140], [480, 140], [500, 140], [520, 140], [540, 140], [560, 140],
     [80, 260], [100, 260], [120, 260], [140, 260], [160, 260], [180, 260], [200, 260], [220, 260], [240, 260], [260, 260], [80, 280], [260, 280],
     [80, 300], [100, 300], [120, 300], [140, 300], [160, 300], [180, 300], [200, 300], [220, 300], [240, 300], [260, 300],
-    [340, 260], [360, 260], [380, 260], [400, 260], [420, 260], [440, 260], [460, 260], [480, 260], [500, 260], [520, 260], [520, 280], [340, 280]
+    [340, 260], [360, 260], [380, 260], [400, 260], [420, 260], [440, 260], [460, 260], [480, 260], [500, 260], [520, 260], [520, 280], [340, 280],
     [340, 300], [360, 300], [380, 300], [400, 300], [420, 300], [440, 300], [460, 300], [480, 300], [500, 300], [520, 300],
-    [220, 420], [240, 420], [260, 420], [280, 420], [300, 420], [320, 420], [340, 420], [360, 420], [380, 420],
     [220, 380], [240, 380], [260, 380], [280, 380], [300, 380], [320, 380], [340, 380], [360, 380], [380, 380],
     [200, 400], [380, 400],
-    [220, 420], [240, 420], [260, 420], [280, 420], [300, 420], [320, 420], [340, 420], [360, 420], [380, 420]
+    [220, 420], [240, 420], [260, 420], [280, 420], [300, 420], [320, 420], [340, 420], [360, 420], [380, 420],
     [40, 460], [60, 460], [80, 460], [100, 460], [120, 460], [140, 460], [160, 460], [180, 460], [200, 460], [220, 460], [240, 460], [260, 460],
     [40, 500], [60, 500], [80, 500], [100, 500], [120, 500], [140, 500], [160, 500], [180, 500], [200, 500], [220, 500], [240, 500], [260, 500],
     [340, 480], [260, 480], [340, 460], [360, 460], [380, 460], [400, 460], [420, 460], [440, 460], [460, 460], [480, 460], [500, 460], [520, 460], [540, 460], [560, 460],
@@ -72,7 +71,7 @@ function init() {
     //to check if two arrays are the same
     function arraysEqual(arr1, arr2) {
         // console.log("arrays", arr1, arr1.length, arr2)
-        for (let i = 0; i < arr1.length; i++) {
+        for (let i = 0; i < 2; i++) {
             if (arr1[i] !== arr2[i]) {
                 return false
             }
@@ -126,6 +125,7 @@ function init() {
         }
         return newArray
     }
+
     // the important thing in having the enemy move in the right direction is the
     //ratio between dx and dy, set a minimum velocity and a maximum velocity for the enemy's movement
     // right now dx and dy is being set by the difference between the enemy and its goal, so it will slow down as it gets closer
@@ -183,6 +183,13 @@ function init() {
                     newArray.push(Math.ceil(x[i] / 20) * 20)
                 }
             }
+
+            while (noGoNodes.find(item => {
+                return arraysEqual(newArray, item)
+            })) {
+                newArray[0] += 20
+                newArray[1] += 20
+            }
             return newArray
         }
 
@@ -213,14 +220,15 @@ function init() {
             let pathArray = []
             let startNode = start
             let currentNode = reached[goal]
-            // console.log("reached", reached)
-            // console.log("current node", currentNode)
+            console.log("reached", reached)
+            console.log("goal", goal)
             while (!arraysEqual(currentNode, startNode)) {
-                // console.log("nodes", currentNode, startNode)
+                console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
+                console.log("current node", currentNode)
                 currentNode = reached[currentNode]
+                console.log("new current node", currentNode)
             }
-
             this.path = pathArray
             this.i = pathArray.length - 1
             // console.log("KLASHJDFKSAHDF")
@@ -230,9 +238,12 @@ function init() {
 
         movementLoop() {
             let moveTime = setTimeout(() => {
-                // console.log("path array in movement loop", this.path)
-                // console.log("path array index", this.i)
-                // console.log("path item", this.path[this.i])
+                if (this.path.length < 1) {
+                    return
+                }
+                console.log("path array in movement loop", this.path)
+                console.log("path array index", this.i)
+                console.log("path item", this.path[this.i])
                 let dx = this.path[this.i][0] - this.x
                 let dy = this.path[this.i][1] - this.y
                 // console.log("path coords", path[this.i][0], path[this.i][1])
@@ -241,13 +252,16 @@ function init() {
                 // console.log("velocities", velocities)
                 this.dx = velocities[0]
                 this.dy = velocities[1]
-                if (this.i--) {
+                this.i--
+                if (this.i > 0) {
                     this.movementLoop()
                 } else {
                     console.log("zero")
                     this.path = []
                     this.dx = 0
                     this.dy = 0
+                    clearTimeout(moveTime)
+                    this.isChasing = false
                     return
                 }
             }, 300)
@@ -469,7 +483,7 @@ function init() {
         shotBulletArray.push(bulletArray[j])
         const xCoord = event.clientX - canvas.offsetLeft
         const yCoord = event.clientY - canvas.offsetTop + 10
-        console.log("x:", xCoord, "y:", yCoord)
+        // console.log("x:", xCoord, "y:", yCoord)
         const theta = Math.atan2(yCoord - (theHero.y + (theHero.height / 2)), xCoord - (theHero.x + (theHero.width / 2)))
         let opposite = Math.cos(theta)
         let adjacent = Math.sin(theta)
