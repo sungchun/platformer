@@ -183,7 +183,7 @@ function init() {
         }
 
         touchedHero() {
-            let xDifference = theHero.x - this.x
+            let xDifference = (theHero.x + theHero.width / 2) - this.x
             let yDifference = theHero.y - this.y
             let hDistance = Math.hypot(yDifference, xDifference)
             if (hDistance <= this.radius * 1.2 && !heroDamaged) {
