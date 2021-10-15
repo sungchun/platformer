@@ -606,7 +606,9 @@ function init() {
                 spawnTiming -= 500
             }
             if (!enemyBench.empty()) {
-                spawnedEnemiesArray.push(enemyBench.get())
+                let nextUp = enemyBench.get()
+                spawnedEnemiesArray.push(nextUp)
+                nextUp.chase([theHero.x + theHero.width / 2, theHero.y])
                 i++
                 if (i >= 8) {
                     i = 0
@@ -645,6 +647,7 @@ function init() {
             j = 0
         }
     }
+
     //updates the canvas by drawing the entities' in new positions
     function update() {
         platformArray.forEach(platform => platform.drawRect())
