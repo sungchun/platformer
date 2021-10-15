@@ -35,6 +35,7 @@ function init() {
             endScore.innerHTML = `Your final score was: ${points}`
         }
     }
+
     //empty array to be filled with nodes
     nodeArray = []
     noGoNodes = [[60, 120], [80, 120], [100, 120], [120, 120], [140, 120], [160, 120], [180, 120], [200, 120], [220, 120],
@@ -590,6 +591,17 @@ function init() {
     const enemySix = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
     const enemySeven = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
     const enemyEight = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const theCrosshair = {
+        x: 0, y: 0, radius: 6, color: "black", drawCrosshair() {
+            console.log("crosshair")
+            context.beginPath()
+            context.strokeStyle = "black"
+            context.lineWidth = 2
+            context.arc(this.x - this.radius / 2, this.y - this.radius / 2, this.radius, 0, Math.PI * 2, false)
+            context.stroke()
+            context.closePath()
+        }
+    }
 
     //making an arrays of things
     let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight]
@@ -673,8 +685,7 @@ function init() {
             enemy.dying()
             enemy.touchedHero()
         })
-
-
+        theCrosshair.drawCrosshair()
     }
     //clears the canvas and updates canvas
     function animate() {
@@ -721,6 +732,10 @@ function init() {
     addEventListener("keydown", theHero.whereTo)
     addEventListener("keyup", theHero.stop)
     addEventListener("click", whereDoIShoot)
+    addEventListener("mousemove", event => {
+        theCrosshair.x = event.clientX - canvasRect.x
+        theCrosshair.y = event.clientY - canvasRect.y
+    })
     playButton.addEventListener("click", playGame)
 }
 addEventListener("DOMContentLoaded", init)
