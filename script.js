@@ -3,6 +3,9 @@ function init() {
     const context = canvas.getContext("2d")
     const score = document.querySelector("#score")
     const livesRemaining = document.querySelector("#lives")
+    const playButton = document.querySelector("button")
+    const startMenu = document.querySelector("#start-menu")
+    const main = document.querySelector("main")
 
     let points = 0
     function incrementScore() {
@@ -11,7 +14,7 @@ function init() {
             score.innerHTML = `${points}`
         }, 10000);
     }
-    incrementScore()
+
     // This is an object that keeps track of the properties of relevant keys
     keyArray = {
         "a": { "pressed": false, "n": 0 }, "d": { "pressed": false, "n": 0 }, " ": { "pressed": false, "n": 0 }, "s": { "pressed": false }, "click": { "pressed": false }
@@ -624,9 +627,9 @@ function init() {
             keyArray["click"]["pressed"] = false
         }, 300)
         shotBulletArray.push(bulletArray[j])
-        const xCoord = event.clientX - canvas.offsetLeft
-        const yCoord = event.clientY - canvas.offsetTop + 10
-        // console.log("x:", xCoord, "y:", yCoord)
+        const xCoord = event.clientX - canvas.offsetLeft - 75
+        const yCoord = event.clientY - canvas.offsetTop - 100
+        console.log("x:", xCoord, "y:", yCoord)
         const theta = Math.atan2(yCoord - (theHero.y + (theHero.height / 2)), xCoord - (theHero.x + (theHero.width / 2)))
         let opposite = Math.cos(theta)
         let adjacent = Math.sin(theta)
@@ -692,10 +695,19 @@ function init() {
         //     }
         // }
     }
-    animate()
+    function playGame() {
+        incrementScore()
+        animate()
+        startMenu.style.display = "none"
+        main.style.top = "-0"
+    }
+
+    // playGame()
+
 
     addEventListener("keydown", theHero.whereTo)
     addEventListener("keyup", theHero.stop)
     addEventListener("click", whereDoIShoot)
+    playButton.addEventListener("click", playGame)
 }
 addEventListener("DOMContentLoaded", init)

@@ -2,13 +2,23 @@
     box-sizing: border-box;
 }
 html, body{
-    height: 100%;
-}
-body{
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    margin: 0;   
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
 }
+
+main{
+    top: -150px;
+    position:relative;
+    display: flex;
+    justify-content: center;
+}
+
 .stats{
     position: relative;
     left: -20px;
@@ -29,6 +39,12 @@ body{
 
 }
 
+.stats div h3{
+    font-size: 40px;
+    margin: 20px;
+    text-transform: uppercase;
+}
+
 .stats div p{
     position: relative;
     font-size: 50px;
@@ -41,10 +57,45 @@ body{
     top: -10px;
 }
 
+#start-menu{
+    position: relative;
+    margin: auto;
+    z-index: 2;
+    width: 400px;
+    height: 300px;
+    top: 350px;
+    margin: auto;
+    background-color: gray;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border-radius: 10px;
+    border: 2px solid black;
+}
+
+#start-menu h1{
+    font-family: sans-serif;
+    font-size: 40px;
+    font-weight: 800;
+    width: 90%;
+}
+
+button{
+    position: relative;
+    top: 10px;
+    width: 200px;
+    height: 100px;
+    font-size: 25px;
+    font-weight: 1000;
+    text-transform: uppercase;
+    border: 1px solid black;
+    border-radius: 20px;
+}
+
 canvas{
     z-index: -1;
     position: relative;
-    top: auto;
     border: 2px solid black;
 }
 span{
