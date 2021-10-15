@@ -87,7 +87,7 @@ main{
     margin: auto;
     z-index: 2;
     width: 400px;
-    height: 300px;
+    height: 400px;
     top: 350px;
     margin: auto;
     background-color: gray;
@@ -111,6 +111,10 @@ main{
     font-size: 25px;
     font-weight: 500;
     text-transform: uppercase;
+}
+
+#end-screen button{
+    top: -30px;
 }
 
 button{
