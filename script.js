@@ -6,6 +6,9 @@ function init() {
     const playButton = document.querySelector("button")
     const startMenu = document.querySelector("#start-menu")
     const main = document.querySelector("main")
+    const finalScore = document.querySelector("#final-score")
+    const endScreen = document.querySelector("#end-screen")
+    const endScore = document.querySelector("#end-screen p")
 
     let points = 0
     function incrementScore() {
@@ -26,7 +29,8 @@ function init() {
 
     function heroDead() {
         if (heroLives <= 0) {
-            window.alert("GG")
+            endScreen.style.display = "flex"
+            endScore.innerHTML = `Your final score was: ${points}`
         }
     }
     //empty array to be filled with nodes
@@ -627,8 +631,8 @@ function init() {
             keyArray["click"]["pressed"] = false
         }, 300)
         shotBulletArray.push(bulletArray[j])
-        const xCoord = event.clientX - canvas.offsetLeft - 75
-        const yCoord = event.clientY - canvas.offsetTop - 100
+        const xCoord = event.clientX - canvas.offsetLeft - 35
+        const yCoord = event.clientY - canvas.offsetTop - 185
         console.log("x:", xCoord, "y:", yCoord)
         const theta = Math.atan2(yCoord - (theHero.y + (theHero.height / 2)), xCoord - (theHero.x + (theHero.width / 2)))
         let opposite = Math.cos(theta)
