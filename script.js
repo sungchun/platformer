@@ -679,32 +679,32 @@ function init() {
         requestAnimationFrame(animate)
         context.clearRect(0, 0, canvas.width, canvas.height)
         update()
-        for (let x = 0; x < 601; x += 20) {
-            context.strokeStyle = "light grey"
-            context.strokeWidth = 1
-            context.beginPath()
-            context.moveTo(x, 0)
-            context.lineTo(x, canvas.height)
-            context.stroke()
+        // for (let x = 0; x < 601; x += 20) {
+        //     context.strokeStyle = "light grey"
+        //     context.strokeWidth = 1
+        //     context.beginPath()
+        //     context.moveTo(x, 0)
+        //     context.lineTo(x, canvas.height)
+        //     context.stroke()
 
-        }
-        for (let y = 0; y < 601; y += 20) {
-            context.strokeStyle = "light grey"
-            context.strokeWidth = 1
-            context.beginPath()
-            context.moveTo(0, y)
-            context.lineTo(canvas.width, y)
-            context.stroke()
-        }
-        for (let x = 0; x < 601; x += 20) {
-            for (let y = 0; y < 601; y += 20) {
-                nodeArray.push([x, y])
-                context.beginPath()
-                context.arc(x, y, 2, 0, Math.PI * 2, false)
-                context.fillStyle = "blue"
-                context.fill()
-            }
-        }
+        // }
+        // for (let y = 0; y < 601; y += 20) {
+        //     context.strokeStyle = "light grey"
+        //     context.strokeWidth = 1
+        //     context.beginPath()
+        //     context.moveTo(0, y)
+        //     context.lineTo(canvas.width, y)
+        //     context.stroke()
+        // }
+        // for (let x = 0; x < 601; x += 20) {
+        //     for (let y = 0; y < 601; y += 20) {
+        //         nodeArray.push([x, y])
+        //         context.beginPath()
+        //         context.arc(x, y, 2, 0, Math.PI * 2, false)
+        //         context.fillStyle = "blue"
+        //         context.fill()
+        //     }
+        // }
     }
     function playGame() {
         incrementScore()
