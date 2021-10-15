@@ -3,13 +3,15 @@ function init() {
     const context = canvas.getContext("2d")
     const score = document.querySelector("#score")
     const livesRemaining = document.querySelector("#lives")
-    const playButton = document.querySelector("button")
+    const playButton = document.querySelector("#start-button")
+    const resetButton = document.querySelector("#reset-button")
     const startMenu = document.querySelector("#start-menu")
     const main = document.querySelector("main")
     const finalScore = document.querySelector("#final-score")
     const endScreen = document.querySelector("#end-screen")
     const endScore = document.querySelector("#end-screen p")
     const canvasRect = canvas.getBoundingClientRect()
+
 
     console.log("canvas rect", canvasRect)
     let points = 0
@@ -28,11 +30,13 @@ function init() {
     standingOn = null
     let heroLives = 3
     let heroDamaged = false
+    let playingGame = true
 
     function heroDead() {
         if (heroLives <= 0) {
             endScreen.style.display = "flex"
             endScore.innerHTML = `Your final score was: ${points}`
+            playingGame = false
         }
     }
 
@@ -637,7 +641,6 @@ function init() {
             }
         }, spawnTiming)
     }
-    spawnEnemies()
     let bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     let shotBulletArray = []
     let j = 0
@@ -689,9 +692,12 @@ function init() {
     }
     //clears the canvas and updates canvas
     function animate() {
-        requestAnimationFrame(animate)
+        if (playingGame) {
+            requestAnimationFrame(animate)
+        }
         context.clearRect(0, 0, canvas.width, canvas.height)
         update()
+        console.log(playingGame)
         // for (let x = 0; x < 601; x += 20) {
         //     context.strokeStyle = "light grey"
         //     context.strokeWidth = 1
@@ -720,10 +726,29 @@ function init() {
         // }
     }
     function playGame() {
+        playingGame = true
         incrementScore()
+        spawnEnemies()
         animate()
         startMenu.style.display = "none"
-        main.style.top = "-0"
+        main.style.top = "0"
+    }
+
+    function resetGame() {
+        shotBulletArray = []
+        for (let i = 0; i < spawnedEnemiesArray.length; i++) {
+            enemyBench.put(spawnedEnemiesArray.pop())
+        }
+        spawnTiming = 5000
+        spawnedEnemiesArray = []
+        heroLives = 3
+        score.innerHTML = "0"
+        points = 0
+        endScreen.style.display = "none"
+        theHero.x = 300
+        theHero.y = 300
+        spawnEnemies()
+        playGame()
     }
 
     // playGame()
@@ -736,6 +761,7 @@ function init() {
         theCrosshair.x = event.clientX - canvasRect.x
         theCrosshair.y = event.clientY - canvasRect.y
     })
+    resetButton.addEventListener("click", resetGame)
     playButton.addEventListener("click", playGame)
 }
 addEventListener("DOMContentLoaded", init)
