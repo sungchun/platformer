@@ -203,7 +203,7 @@ function init() {
             let xDifference = (theHero.x + theHero.width / 2) - this.x
             let yDifference = theHero.y - this.y
             let hDistance = Math.hypot(yDifference, xDifference)
-            if (hDistance <= this.radius * 1.2 && !heroDamaged) {
+            if (hDistance <= this.radius * 2 && !heroDamaged) {
                 heroLives--
                 livesRemaining.innerHTML = `${heroLives}`
                 heroDamaged = true
@@ -419,11 +419,13 @@ function init() {
                 // console.log("bullet radius", this.radius)
                 // console.log("enemy radius", enemy.radius)
                 if ((this.radius + enemy.radius) > hDistance) {
-                    points += 50
                     enemy.lives--
                     enemy.color = enemy.moreColors[enemy.lives]
                     shotBulletArray.splice(shotBulletArray.indexOf(this), 1)
-                    return enemy
+                    if (enemy.lives <= -1) {
+                        points += 50
+                        score.innerHTML = `${points}`
+                    }
                 }
             })
         }
@@ -603,7 +605,9 @@ function init() {
     function spawnEnemies() {
         let spawningInterval = setTimeout(() => {
             if ((points - howManyPoints) >= 500 && spawnTiming > 500) {
-                spawnTiming -= 500
+                if (spawnTiming > 1000) {
+                    spawnTiming -= 1000
+                }
             }
             if (!enemyBench.empty()) {
                 let nextUp = enemyBench.get()
