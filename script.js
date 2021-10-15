@@ -361,7 +361,6 @@ function init() {
         updateEnemy() {
             this.x = this.x + this.dx
             this.y = this.y + this.dy
-            this.touchedHero()
         }
 
         chase(goal) {
@@ -631,7 +630,7 @@ function init() {
             keyArray["click"]["pressed"] = false
         }, 300)
         shotBulletArray.push(bulletArray[j])
-        const xCoord = event.clientX - canvas.offsetLeft - 35
+        const xCoord = event.clientX - canvas.offsetLeft - 550
         const yCoord = event.clientY - canvas.offsetTop - 185
         console.log("x:", xCoord, "y:", yCoord)
         const theta = Math.atan2(yCoord - (theHero.y + (theHero.height / 2)), xCoord - (theHero.x + (theHero.width / 2)))
@@ -663,6 +662,7 @@ function init() {
             enemy.updateEnemy()
             enemy.drawEnemy()
             enemy.dying()
+            enemy.touchedHero()
         })
 
 
