@@ -8,12 +8,11 @@ function init() {
     const startMenu = document.querySelector("#start-menu")
     const main = document.querySelector("main")
     const finalScore = document.querySelector("#final-score")
+    const highScore = document.querySelector("#high-score")
     const endScreen = document.querySelector("#end-screen")
-    const endScore = document.querySelector("#end-screen p")
     const canvasRect = canvas.getBoundingClientRect()
-
-
-    console.log("canvas rect", canvasRect)
+    localStorage.setItem("high-score", 0)
+    let localHighScore = localStorage.getItem("high-score")
     let points = 0
     function incrementScore() {
         let scoreInterval = setInterval(() => {
@@ -35,7 +34,11 @@ function init() {
     function heroDead() {
         if (heroLives <= 0) {
             endScreen.style.display = "flex"
-            endScore.innerHTML = `Your final score was: ${points}`
+            if (points > localHighScore) {
+                localHighScore = points
+            }
+            finalScore.innerHTML = `${points}`
+            highScore.innerHTML = `${localHighScore}`
             playingGame = false
         }
     }
