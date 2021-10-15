@@ -9,7 +9,9 @@ function init() {
     const finalScore = document.querySelector("#final-score")
     const endScreen = document.querySelector("#end-screen")
     const endScore = document.querySelector("#end-screen p")
+    const canvasRect = canvas.getBoundingClientRect()
 
+    console.log("canvas rect", canvasRect)
     let points = 0
     function incrementScore() {
         let scoreInterval = setInterval(() => {
@@ -636,8 +638,8 @@ function init() {
             keyArray["click"]["pressed"] = false
         }, 300)
         shotBulletArray.push(bulletArray[j])
-        const xCoord = event.clientX - canvas.offsetLeft - 550
-        const yCoord = event.clientY - canvas.offsetTop - 185
+        const xCoord = event.clientX - canvasRect.x
+        const yCoord = event.clientY - canvasRect.y
         console.log("x:", xCoord, "y:", yCoord)
         const theta = Math.atan2(yCoord - (theHero.y + (theHero.height / 2)), xCoord - (theHero.x + (theHero.width / 2)))
         let opposite = Math.cos(theta)
