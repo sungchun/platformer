@@ -81,6 +81,23 @@ main{
     width: 90%;
 }
 
+#start-menu p{
+    left: 10px;
+    top: -30px;
+    text-align: start;
+    position: relative;
+    width: 95%;
+}
+
+#start-menu span{
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+#start-button{
+    top: -20px;
+}
+
 #end-screen{
     display: none;
     position: relative;

@@ -162,29 +162,12 @@ function init() {
         return newArray
     }
 
-    // the important thing in having the enemy move in the right direction is the
-    //ratio between dx and dy, set a minimum velocity and a maximum velocity for the enemy's movement
-    // right now dx and dy is being set by the difference between the enemy and its goal, so it will slow down as it gets closer
-    function calculateEnemyVelocity(dx1, dy1, v) {
-        let h = Math.hypot(dx1, dy1)
-        let dy2 = h * v / Math.sqrt((dx1 / dy1) ** 2 + 1)
-        let dx2 = dy2 * (dx1 / dy1)
-        if (!dx1) {
-            dx2 = 0
-            dy2 = v
-        } else if (!dy1) {
-            dx2 = v
-            dy2 = 0
-        }
-        if (Math.sign(dx2) !== Math.sign(dx1)) {
-            dx2 *= -1
-        }
-        if (Math.sign(dy2) !== Math.sign(dy1)) {
-            dy2 *= -1
-        }
-        // console.log("old velocities", "dx1", dx1, "dy1", dy1)
-        // console.log("new velocities", "dx2", dx2, "dy2", dy2)
-        return [dx2, dy2]
+    function velocityHypot(x1, y1) {
+        //find hypot and use it to normalize the original velocities
+        let h = Math.sqrt(x1 ** 2 + y1 ** 2)
+        let x2 = x1 / h
+        let y2 = y1 / h
+        return [x2, y2]
     }
 
     let spawnsArray = [[20, 20], [580, 20], [20, 580], [580, 580]]
@@ -198,7 +181,7 @@ function init() {
             this.y = y
             this.radius = radius
             this.color = color
-            this.moreColors = ["lightgrey", "red", "purple"]
+            this.moreColors = ["lightgrey", "red", "none"]
             this.lives = 2
             this.position = [this.x, this.y]
             this.dx = 0
@@ -213,12 +196,11 @@ function init() {
             let xDifference = (theHero.x + theHero.width / 2) - this.x
             let yDifference = theHero.y - this.y
             let hDistance = Math.hypot(yDifference, xDifference)
-            if (hDistance <= this.radius * 2 && !heroDamaged) {
+            if (hDistance <= this.radius * 1.7 && !heroDamaged) {
                 heroLives--
                 livesRemaining.innerHTML = `${heroLives}`
                 heroDamaged = true
                 theHero.color = "lightgreen"
-                console.log("lives", heroLives)
                 setTimeout(() => {
                     heroDamaged = false
                     theHero.color = "green"
@@ -293,8 +275,6 @@ function init() {
             return newArray
         }
 
-
-
         pathfinder = function (start, goal) {
             let frontier = new Queue()
             frontier.put(start)
@@ -336,6 +316,7 @@ function init() {
             this.i = pathArray.length - 1
             // console.log("KLASHJDFKSAHDF")
             // console.log("path array", pathArray, "this.array", this.path)
+            console.log("pathing array", this.path)
             return pathArray
         }
 
@@ -351,10 +332,13 @@ function init() {
                 let dy = this.path[this.i][1] - this.y
                 // console.log("path coords", path[this.i][0], path[this.i][1])
                 // console.log("thises", this.x, this.y)
-                let velocities = calculateEnemyVelocity(dx, dy, this.velocity)
+                // let velocities = calculateEnemyVelocity(dx, dy, this.velocity)
+                let velocities = velocityHypot(dx, dy)
                 // console.log("velocities", velocities)
-                this.dx = velocities[0]
-                this.dy = velocities[1]
+                this.dx = Math.ceil(velocities[0] * this.velocity)
+                this.dy = Math.ceil(velocities[1] * this.velocity)
+                console.log("dy:", this.dy, "dx:", this.dx)
+                console.log(`coordinates x; ${this.x} y: ${this.y}`)
                 this.i--
                 if (this.i > 0) {
                     this.movementLoop()
@@ -381,17 +365,90 @@ function init() {
         }
 
         chasing(goal) {
+            console.log(this.isChasing)
             if (this.isChasing) {
                 return
-            }
-            this.isChasing = true
-            // this.chase(goal)
-            // this.isChasing = false
-            setTimeout(() => {
+            } else {
                 this.chase(goal)
-                this.isChasing = false
-            }, 600);
+                setTimeout(() => {
+                    this.chase(goal)
+                    this.isChasing = true
+                }, 600);
+            }
         }
+    }
+
+    class shootingEnemies {
+        constructor(x, y, radius, color, dx, dy,) {
+            this.x = x
+            this.y = y
+            this.radius = radius
+            this.color = color
+            this.moreColors = ["brown", "yellow", "green"]
+            this.lives = 2
+            this.dx = dx
+            this.dy = dy
+            this.shot = false
+            this.spawnX = x
+            this.spawnY = y
+        }
+
+        dying() {
+            if (this.lives <= -1) {
+                spawnedEnemiesArray.splice(spawnedEnemiesArray.indexOf(this), 1)
+                enemyBench.put(this)
+                this.lives = 2
+                this.color = "green"
+                this.x = this.spawnX
+                this.y = this.spawnY
+            }
+        }
+
+        drawEnemy() {
+            context.beginPath()
+            context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+            context.fillStyle = this.color
+            context.fill()
+        }
+
+        shootHero() {
+            let theta = Math.atan2((theHero.y + (theHero.height / 2)) - this.y, (theHero.x + (theHero.width / 2)) - this.x)
+            let opposite = Math.cos(theta)
+            let adjacent = Math.sin(theta)
+            let firedBullet = enemyBulletArray.get()
+            enemyShotBullets.push(firedBullet)
+            firedBullet.x = this.x
+            firedBullet.y = this.y
+            firedBullet.dx = opposite * 6
+            firedBullet.dy = adjacent * 6
+        }
+
+        whenDoIShoot() {
+            if (this.shootHero) {
+                return
+            }
+            this.shootHero()
+            let secondShot = setTimeout(() => {
+                this.shootHero()
+            }, 150);
+            this.shot = true
+            setTimeout(() => {
+                this.shot = false
+            }, 1000)
+        }
+
+        updateEnemy() {
+            if (this.x >= 565) {
+                this.dx = -this.dx
+            }
+            if (this.y >= 565 || this.y <= 35) {
+                this.dy = -this.dy
+            }
+            this.x = this.x + this.dx
+            this.y = this.y + this.dy
+        }
+
+
     }
 
     class Projectile {
@@ -440,8 +497,19 @@ function init() {
             })
         }
 
-        hitPlatform() {
-
+        hitHero() {
+            let xDifference = (theHero.x + (theHero.width / 2)) - this.x
+            let yDifference = (theHero.y + (theHero.height / 2)) - this.y
+            let hDistance = Math.hypot(xDifference, yDifference)
+            if ((this.radius + 10) > hDistance) {
+                heroLives--
+                theHero.color = "lightgreen"
+                setTimeout(() => {
+                    heroDamaged = false
+                    theHero.color = "green"
+                }, 500)
+                enemyShotBullets.splice(enemyShotBullets.indexOf(this), 1)
+            }
         }
 
     }
@@ -482,6 +550,7 @@ function init() {
                     theHero.dx += 6
                     break
                 case " ":
+                case "w":
                     // when the space-bar is pressed, if the player has not jumped twice yet and they're not holding the button down, theHero will jump
                     if (keyArray[" "]["n"] >= 2) {
                         break
@@ -509,6 +578,7 @@ function init() {
                     theHero.dx -= 6
                     break
                 case " ":
+                case "w":
                     //the number of jump checker is incremented when the space-bar is released
                     keyArray[" "]["n"]++
                     break
@@ -583,6 +653,11 @@ function init() {
     const bulletFive = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
     const bulletSix = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
     const bulletSeven = new Projectile(theHero.centerX, theHero.centerY, 3, "grey", 0, 0)
+    const enemyBulletOne = new Projectile(0, 0, 4, "black", 0, 0)
+    const enemyBulletTwo = new Projectile(0, 0, 4, "black", 0, 0)
+    const enemyBulletThree = new Projectile(0, 0, 4, "black", 0, 0)
+    const enemyBulletFour = new Projectile(0, 0, 4, "black", 0, 0)
+    const enemyBulletFive = new Projectile(0, 0, 4, "black", 0, 0)
     const platformOne = new Entity(50, 475, 10, 200, "black", 0, 0)
     const platformTwo = new Entity(350, 475, 10, 200, "black", 0, 0)
     const platformThree = new Entity(225, 400, 10, 150, "black", 0, 0)
@@ -590,17 +665,27 @@ function init() {
     const platformFive = new Entity(360, 280, 10, 150, "black", 0, 0)
     const platformSix = new Entity(50, 110, 10, 200, "black", 0, 0)
     const platformSeven = new Entity(350, 110, 10, 200, "black", 0, 0)
-    const enemyOne = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemyTwo = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemyThree = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemyFour = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemyFive = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemySix = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemySeven = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
-    const enemyEight = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 0.03)
+    const enemyOne = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyTwo = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyThree = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyFour = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyFive = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemySix = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemySeven = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyEight = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyNine = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyTen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyEleven = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyTwelve = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyThirteen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyFourteen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const enemyFifteen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
+    const shootingEnemyOne = new shootingEnemies(40, 30, 20, "green", 3, 0)
+    const shootingEnemyTwo = new shootingEnemies(40, 570, 20, "green", 3, 0)
+    const shootingEnemyThree = new shootingEnemies(30, 560, 20, "green", 0, -3)
+    const shootingEnemyFour = new shootingEnemies(570, 560, 20, "green", 0, -3)
     const theCrosshair = {
         x: 0, y: 0, radius: 6, color: "black", drawCrosshair() {
-            console.log("crosshair")
             context.beginPath()
             context.strokeStyle = "black"
             context.lineWidth = 2
@@ -611,39 +696,63 @@ function init() {
     }
 
     //making an arrays of things
-    let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight]
-    let spawnedEnemiesArray = []
+    let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight, enemyNine, enemyTen, enemyEleven, enemyTwelve, enemyThirteen, enemyFourteen, enemyFifteen]
+    let shootingEnemyArray = [shootingEnemyOne, shootingEnemyTwo, shootingEnemyThree, shootingEnemyFour]
     let platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
+    let spawnedEnemiesArray = []
+    let spawnedShootingEnemies = []
+    let enemyBulletArray = new Queue()
+    enemyBulletArray.elements = [enemyBulletOne, enemyBulletTwo, enemyBulletThree, enemyBulletFour, enemyBulletFive]
+    let enemyShotBullets = []
 
     let enemyBench = new Queue()
     for (let i = 0; i < enemyArray.length; i++) {
         enemyBench.put(enemyArray[i])
     }
 
+    let shootingEnemyBench = new Queue()
+    for (let i = 0; i < shootingEnemyArray.length; i++) {
+        shootingEnemyBench.put(shootingEnemyArray[i])
+    }
+
     let spawnTiming = 5000
-    let i = 0
     let howManyPoints = points
     function spawnEnemies() {
         let spawningInterval = setTimeout(() => {
-            if ((points - howManyPoints) >= 500 && spawnTiming > 500) {
-                if (spawnTiming > 1000) {
-                    spawnTiming -= 1000
-                }
+            if ((points - howManyPoints) >= 100 && spawnTiming > 500) {
+                howManyPoints = points
+                spawnTiming -= 500
             }
             if (!enemyBench.empty()) {
+                console.log(spawnTiming)
                 let nextUp = enemyBench.get()
                 spawnedEnemiesArray.push(nextUp)
                 nextUp.chase([theHero.x + theHero.width / 2, theHero.y])
-                i++
-                if (i >= 8) {
-                    i = 0
-                }
             }
             if (heroLives > 0) {
                 spawnEnemies()
             }
         }, spawnTiming)
     }
+
+    let shootingSpawnTiming = 10000
+
+    function spawnShootingEnemies() {
+        let shootingSpawningInterval = setTimeout(() => {
+            if ((points - howManyPoints) >= 500 && shootingSpawnTiming > 2000) {
+                howManyPoints = points
+                shootingSpawnTiming -= 2000
+            }
+            if (!shootingEnemyBench.empty()) {
+                spawnedShootingEnemies.push(shootingEnemyBench.get())
+            }
+            if (heroLives > 0) {
+                spawnedShootingEnemies()
+            }
+        }, shootingSpawnTiming)
+
+    }
+
     let bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     let shotBulletArray = []
     let j = 0
@@ -664,8 +773,8 @@ function init() {
         let adjacent = Math.sin(theta)
         bulletArray[j].x = theHero.x + (theHero.width / 2)
         bulletArray[j].y = theHero.y + (theHero.height / 2)
-        bulletArray[j].dx = opposite * 8
-        bulletArray[j].dy = adjacent * 8
+        bulletArray[j].dx = opposite * 10
+        bulletArray[j].dy = adjacent * 10
         j++
         if (j === 6) {
             j = 0
@@ -690,6 +799,17 @@ function init() {
             enemy.drawEnemy()
             enemy.dying()
             enemy.touchedHero()
+        })
+        // spawnedShootingEnemies.forEach(enemy => {
+        //     enemy.patrolling()
+        //     enemy.updateEnemy()
+        //     enemy.drawEnemy()
+        //     enemy.whenDoIShoot()
+        // })
+        enemyShotBullets.forEach(bullet => {
+            bullet.updateBullet()
+            bullet.drawCircle()
+            bullet.hitHero()
         })
         theCrosshair.drawCrosshair()
     }
@@ -729,9 +849,11 @@ function init() {
         // }
     }
     function playGame() {
+        howManyPoints = 0
         playingGame = true
         incrementScore()
         spawnEnemies()
+        spawnShootingEnemies()
         animate()
         startMenu.style.display = "none"
         main.style.top = "0"
@@ -743,10 +865,12 @@ function init() {
             enemyBench.put(spawnedEnemiesArray.pop())
         }
         spawnTiming = 5000
+        points = 0
+        howManyPoints = points
         spawnedEnemiesArray = []
         heroLives = 3
+        livesRemaining.innerHTML = "3"
         score.innerHTML = "0"
-        points = 0
         endScreen.style.display = "none"
         theHero.x = 300
         theHero.y = 300
