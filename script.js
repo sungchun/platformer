@@ -308,7 +308,6 @@ function init() {
             }
             this.path = pathArray
             this.i = pathArray.length - 1
-            console.log("pathing array", this.path)
             return pathArray
         }
 
@@ -322,8 +321,6 @@ function init() {
                 let velocities = velocityHypot(dx, dy)
                 this.dx = Math.ceil(velocities[0] * this.velocity)
                 this.dy = Math.ceil(velocities[1] * this.velocity)
-                console.log("dy:", this.dy, "dx:", this.dx)
-                console.log(`coordinates x; ${this.x} y: ${this.y}`)
                 this.i--
                 if (this.i > 0) {
                     this.movementLoop()
@@ -348,7 +345,6 @@ function init() {
         }
 
         chasing(goal) {
-            console.log(this.isChasing)
             if (this.isChasing) {
                 return
             } else {
@@ -693,10 +689,10 @@ function init() {
         enemyBench.put(enemyArray[i])
     }
 
-    let shootingEnemyBench = new Queue()
-    for (let i = 0; i < shootingEnemyArray.length; i++) {
-        shootingEnemyBench.put(shootingEnemyArray[i])
-    }
+    // let shootingEnemyBench = new Queue()
+    // for (let i = 0; i < shootingEnemyArray.length; i++) {
+    //     shootingEnemyBench.put(shootingEnemyArray[i])
+    // }
 
     let spawnTiming = 5000
     let howManyPoints = points
@@ -707,7 +703,6 @@ function init() {
                 spawnTiming -= 500
             }
             if (!enemyBench.empty()) {
-                console.log(spawnTiming)
                 let nextUp = enemyBench.get()
                 spawnedEnemiesArray.push(nextUp)
                 nextUp.chase([theHero.x + theHero.width / 2, theHero.y])
@@ -750,7 +745,6 @@ function init() {
         shotBulletArray.push(bulletArray[j])
         const xCoord = event.clientX - canvasRect.x
         const yCoord = event.clientY - canvasRect.y
-        console.log("x:", xCoord, "y:", yCoord)
         const theta = Math.atan2(yCoord - (theHero.y + (theHero.height / 2)), xCoord - (theHero.x + (theHero.width / 2)))
         let opposite = Math.cos(theta)
         let adjacent = Math.sin(theta)
@@ -803,7 +797,6 @@ function init() {
         }
         context.clearRect(0, 0, canvas.width, canvas.height)
         update()
-        console.log(playingGame)
         // for (let x = 0; x < 601; x += 20) {
         //     context.strokeStyle = "light grey"
         //     context.strokeWidth = 1
@@ -836,7 +829,7 @@ function init() {
         playingGame = true
         incrementScore()
         spawnEnemies()
-        spawnShootingEnemies()
+        // spawnShootingEnemies()
         animate()
         startMenu.style.display = "none"
         main.style.top = "0"
