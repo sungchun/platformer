@@ -302,20 +302,12 @@ function init() {
             let pathArray = [goal]
             let startNode = start
             let currentNode = reached[goal]
-            // console.log("enemy coords", this.x, this.y)
-            // console.log("hero coords", theHero.x, theHero.y)
-            // console.log("goal", goal)
             while (!arraysEqual(currentNode, startNode)) {
-                // console.log("nodes", currentNode, startNode)
                 pathArray.push(currentNode)
-                // console.log("current node", currentNode)
                 currentNode = reached[currentNode]
-                // console.log("new current node", currentNode)
             }
             this.path = pathArray
             this.i = pathArray.length - 1
-            // console.log("KLASHJDFKSAHDF")
-            // console.log("path array", pathArray, "this.array", this.path)
             console.log("pathing array", this.path)
             return pathArray
         }
@@ -325,16 +317,9 @@ function init() {
                 if (this.path.length < 1) {
                     return
                 }
-                // console.log("path array in movement loop", this.path)
-                // console.log("path array index", this.i)
-                // console.log("path item", this.path[this.i])
                 let dx = this.path[this.i][0] - this.x
                 let dy = this.path[this.i][1] - this.y
-                // console.log("path coords", path[this.i][0], path[this.i][1])
-                // console.log("thises", this.x, this.y)
-                // let velocities = calculateEnemyVelocity(dx, dy, this.velocity)
                 let velocities = velocityHypot(dx, dy)
-                // console.log("velocities", velocities)
                 this.dx = Math.ceil(velocities[0] * this.velocity)
                 this.dy = Math.ceil(velocities[1] * this.velocity)
                 console.log("dy:", this.dy, "dx:", this.dx)
@@ -358,8 +343,6 @@ function init() {
         }
 
         chase(goal) {
-            // console.log("goal", makeMultipleOfTwenty(goal))
-            // console.log(makeMultipleOfTwenty([this.x, this.y]))
             this.makeThePath(makeMultipleOfTwentyOne(this.ensureNotRestrictedNode([this.x, this.y])), this.makeMultipleOfTwentyTwo(goal))
             this.movementLoop(this.path)
         }
@@ -680,10 +663,10 @@ function init() {
     const enemyThirteen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
     const enemyFourteen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
     const enemyFifteen = new Enemies(randomSpawn()[0], randomSpawn()[1], 15, "blue", 3)
-    const shootingEnemyOne = new shootingEnemies(40, 30, 20, "green", 3, 0)
-    const shootingEnemyTwo = new shootingEnemies(40, 570, 20, "green", 3, 0)
-    const shootingEnemyThree = new shootingEnemies(30, 560, 20, "green", 0, -3)
-    const shootingEnemyFour = new shootingEnemies(570, 560, 20, "green", 0, -3)
+    // const shootingEnemyOne = new shootingEnemies(40, 30, 20, "green", 3, 0)
+    // const shootingEnemyTwo = new shootingEnemies(40, 570, 20, "green", 3, 0)
+    // const shootingEnemyThree = new shootingEnemies(30, 560, 20, "green", 0, -3)
+    // const shootingEnemyFour = new shootingEnemies(570, 560, 20, "green", 0, -3)
     const theCrosshair = {
         x: 0, y: 0, radius: 6, color: "black", drawCrosshair() {
             context.beginPath()
@@ -697,10 +680,10 @@ function init() {
 
     //making an arrays of things
     let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight, enemyNine, enemyTen, enemyEleven, enemyTwelve, enemyThirteen, enemyFourteen, enemyFifteen]
-    let shootingEnemyArray = [shootingEnemyOne, shootingEnemyTwo, shootingEnemyThree, shootingEnemyFour]
+    // let shootingEnemyArray = [shootingEnemyOne, shootingEnemyTwo, shootingEnemyThree, shootingEnemyFour]
     let platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
     let spawnedEnemiesArray = []
-    let spawnedShootingEnemies = []
+    // let spawnedShootingEnemies = []
     let enemyBulletArray = new Queue()
     enemyBulletArray.elements = [enemyBulletOne, enemyBulletTwo, enemyBulletThree, enemyBulletFour, enemyBulletFive]
     let enemyShotBullets = []
@@ -735,23 +718,23 @@ function init() {
         }, spawnTiming)
     }
 
-    let shootingSpawnTiming = 10000
+    // let shootingSpawnTiming = 10000
 
-    function spawnShootingEnemies() {
-        let shootingSpawningInterval = setTimeout(() => {
-            if ((points - howManyPoints) >= 500 && shootingSpawnTiming > 2000) {
-                howManyPoints = points
-                shootingSpawnTiming -= 2000
-            }
-            if (!shootingEnemyBench.empty()) {
-                spawnedShootingEnemies.push(shootingEnemyBench.get())
-            }
-            if (heroLives > 0) {
-                spawnedShootingEnemies()
-            }
-        }, shootingSpawnTiming)
+    // function spawnShootingEnemies() {
+    //     let shootingSpawningInterval = setTimeout(() => {
+    //         if ((points - howManyPoints) >= 500 && shootingSpawnTiming > 2000) {
+    //             howManyPoints = points
+    //             shootingSpawnTiming -= 2000
+    //         }
+    //         if (!shootingEnemyBench.empty()) {
+    //             spawnedShootingEnemies.push(shootingEnemyBench.get())
+    //         }
+    //         if (heroLives > 0) {
+    //             spawnedShootingEnemies()
+    //         }
+    //     }, shootingSpawnTiming)
 
-    }
+    // }
 
     let bulletArray = [bulletOne, bulletTwo, bulletThree, bulletFour, bulletFive, bulletSix, bulletSeven]
     let shotBulletArray = []
