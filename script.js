@@ -107,6 +107,7 @@ function init() {
     //to check if two arrays are the same
     function arraysEqual(arr1, arr2) {
         // console.log("arrays", arr1, arr1.length, arr2)
+        if (!arr1 || !arr2) return true
         for (let i = 0; i < 2; i++) {
             if (arr1[i] !== arr2[i]) {
                 return false
@@ -675,7 +676,7 @@ function init() {
     }
 
     //making an arrays of things
-    let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight, enemyNine, enemyTen, enemyEleven, enemyTwelve, enemyThirteen, enemyFourteen, enemyFifteen]
+    let enemyArray = [enemyOne, enemyTwo, enemyThree, enemyFour, enemyFive, enemySix, enemySeven, enemyEight, enemyNine, enemyTen]
     // let shootingEnemyArray = [shootingEnemyOne, shootingEnemyTwo, shootingEnemyThree, shootingEnemyFour]
     let platformArray = [floor, platformOne, platformTwo, platformThree, platformFour, platformFive, platformSix, platformSeven]
     let spawnedEnemiesArray = []
@@ -843,6 +844,12 @@ function init() {
         spawnTiming = 5000
         points = 0
         howManyPoints = points
+        enemyArray.forEach((enemy) => {
+            enemy.x = randomSpawn()[0]
+            enemy.y = randomSpawn()[0]
+            enemy.lives = 2
+            console.log(`enemies coords x:${enemy.x}, y:${enemy.y}`)
+        })
         spawnedEnemiesArray = []
         heroLives = 3
         livesRemaining.innerHTML = "3"
