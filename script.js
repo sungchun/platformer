@@ -702,7 +702,7 @@ function init() {
     let howManyPoints = points
     function spawnEnemies() {
         let spawningInterval = setTimeout(() => {
-            if ((points - howManyPoints) >= 1000 && spawnTiming > 500) {
+            if ((points - howManyPoints) >= 100 && spawnTiming > 500) {
                 howManyPoints = points
                 spawnTiming -= 500
             }
