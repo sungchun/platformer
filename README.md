@@ -10,7 +10,7 @@ My project is a game that is hosted on a website where all of the mechanics and 
 
 ## Deployment:
 
-This game has been deployed via GitHub Pages and is available to play here: [GitHub](https://sungchun.github.io/platformer/).
+This game has been deployed via GitHub Pages and is available to play [here](https://sungchun.github.io/platformer/).
 
 ## How to download:
 
