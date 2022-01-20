@@ -10,11 +10,11 @@ My project is a game that is hosted on a website where all of the mechanics and 
 
 ## Deployment:
 
-This game has been deployed via GitHub Pages and is available to play here: [GitHub](https://github.com/sungchun/platformer).
+This game has been deployed via GitHub Pages and is available to play here: [GitHub](https://sungchun.github.io/platformer/).
 
 ## How to download:
 
-To download the game files you can either clone the repository or download them as a ZIP file here.
+To download the game files you can either clone the repository or download them as a ZIP file [here](https://github.com/sungchun/platformer).
 
 - If you want to clone the repository:
   1. Click the button labeled ‘Code’.
