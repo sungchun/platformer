@@ -251,9 +251,9 @@ The enemies in this game needed to be able to follow the player wherever they we
             return reached
         }
 ```
-    - In order for the enemies to find a path to the player, I needed to create a graph of nodes on top of the game canvas.
-    - ‘pathfinder’ is a method on the ‘Enemy’ class that creates a path of nodes from the enemy to the player using the Breadth First Search algorithm.
-        - This method links all the nodes on the path together.
+- In order for the enemies to find a path to the player, I needed to create a graph of nodes on top of the game canvas.
+- ‘pathfinder’ is a method on the ‘Enemy’ class that creates a path of nodes from the enemy to the player using the Breadth First Search algorithm.
+    - This method links all the nodes on the path together.
 
 ```
     makeThePath(start, goal) {
@@ -361,8 +361,8 @@ This project helped me to solidify my ability to use HTML, CSS and JavaScript to
         - Using object-oriented programming to make the code more efficient.
 
 ## Future Improvements
-    Features I would add if I were to improve the game include:
-        - Different weapons/power ups that can be picked up.
-        - An inventory so the player can choose which weapons to use.
-        - Different kinds of enemies.
+Features I would add if I were to improve the game include:
+    - Different weapons/power ups that can be picked up.
+    - An inventory so the player can choose which weapons to use.
+    - Different kinds of enemies.
 
