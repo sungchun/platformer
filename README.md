@@ -16,13 +16,13 @@ This game has been deployed via GitHub Pages and is available to play here.
 
 To download the game files you can either clone the repository or download them as a ZIP file here.
 
-If you want to clone the repository:
-    1. Click the button labeled ‘Code’.
-    2. On the dropdown menu select HTTPS and copy the link provided.
-    3. Using the terminal, navigate to where you want to clone the repository and execute the command: “git clone (copied HTTPS link)”
-If you want to download the ZIP file:
-    1. Click the button labeled ‘Code’
-    2. Click the ‘Download ZIP’ button on the dropdown menu.
+- If you want to clone the repository:
+  1. Click the button labeled ‘Code’.
+  2. On the dropdown menu select HTTPS and copy the link provided.
+  3. Using the terminal, navigate to where you want to clone the repository and execute the command: “git clone (copied HTTPS link)”
+- If you want to download the ZIP file:
+  1. Click the button labeled ‘Code’
+  2. Click the ‘Download ZIP’ button on the dropdown menu.
 
 ## Goal and TimeFrame:
 
