@@ -6,7 +6,7 @@ This project was the first project I did during my Software Engineering Immersiv
 
 My project is a game that is hosted on a website where all of the mechanics and visuals are created using JavaScript, HTML and CSS.
 
-![circle destroyer](/Users/prestonng/Documents/GeneralAssembly/Projects/project-1/platformer/assets/start-page.png)
+![circle destroyer](assets/start-page.png)
 
 ## Deployment:
 
@@ -39,7 +39,7 @@ The objective of this project was to create a fully playable browser game within
 
 ## Gameplay:
 
-![circle destroyer gameplay](/Users/prestonng/Documents/GeneralAssembly/Projects/project-1/platformer/assets/ezgif.com-gif-maker.gif)
+![circle destroyer gameplay](assets/gameplay.gif)
 
 Circle Destroyer 2022 is a game where the player plays as a rectangle and tries to achieve the highest score possible. The rectangle can run and jump around an arena and fire bullets that eliminate enemies.
 
@@ -50,7 +50,7 @@ The player increases their score by eliminating enemies, their score also increa
 ### Planning
 The first step for this project was to come up with an idea. My aim was to make a game that I would enjoy playing, and I eventually came up with the idea for a survival-platformer. I created a wire-frame for how I wanted the final game to look.
 
-![wireframe](/Users/prestonng/Documents/GeneralAssembly/Projects/project-1/platformer/assets/platformer-wirefram.png)
+![wireframe](assets/platformer-wirefram.png)
 
 ### Shooting
 
